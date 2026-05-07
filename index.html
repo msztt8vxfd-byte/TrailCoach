@@ -298,6 +298,30 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
 .tab-inner{display:flex;gap:4px}
 .tab-inner-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text3);transition:all .15s}
 .tab-inner-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(232,255,71,.2)}
+
+/* ─ ATHLETE MODE ─ */
+body.athlete-mode .sidebar{display:none!important}
+body.athlete-mode .topbar-center{display:none!important}
+body.athlete-mode .topbar-right{display:none!important}
+#ath-mode-bar{display:none;align-items:center;gap:12px;padding:0 16px}
+body.athlete-mode #ath-mode-bar{display:flex!important}
+body.athlete-mode #ath-selector{display:none!important}
+
+/* ─ HERO ACTIONS ─ */
+.hero-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.btn-danger{background:var(--red-dim)!important;color:var(--red)!important;border-color:rgba(255,71,87,.3)!important}
+.btn-danger:hover{background:rgba(255,71,87,.2)!important}
+
+/* ─ STRAVA STATUS PANEL ─ */
+.strava-status-panel{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sc-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.sc-on{background:rgba(252,76,2,.12);color:var(--strava);border:1px solid rgba(252,76,2,.3)}
+.sc-off{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.sc-meta{font-size:10px;color:var(--text3);flex:1;line-height:1.6}
+
+/* ─ SESSION TOGGLE ─ */
+.sess-pill{cursor:pointer;transition:filter .15s}
+.sess-pill:hover{filter:brightness(1.2)}
 </style>
 </head>
 <body>
@@ -340,6 +364,10 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
     <div class="logo-wrap">
       <div class="logo">Trail<em>.</em>Coach</div>
       <div class="logo-badge">PRO</div>
+    </div>
+    <div id="ath-mode-bar">
+      <button class="btn btn-ghost btn-sm" onclick="exitAthleteMode()">← Coach</button>
+      <span id="ath-mode-name" style="font-size:12px;font-weight:700;color:var(--text2)">Mode Athlète</span>
     </div>
     <div class="topbar-center">
       <div class="top-tab active" onclick="showView('dashboard',this)">Vue Globale</div>
@@ -502,7 +530,11 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
             <div class="hero-kpi"><div class="hero-kpi-val" id="ath-kpi-comp">—</div><div class="hero-kpi-lbl">Complétion</div></div>
             <div class="hero-kpi"><div class="hero-kpi-val" id="ath-kpi-sess">—</div><div class="hero-kpi-lbl">Séances</div></div>
           </div>
-          <button class="btn btn-strava btn-sm" id="ath-strava-btn" onclick="connectAthleteStrava()">⚡ Connecter Strava</button>
+          <div class="hero-actions">
+            <button class="btn btn-strava btn-sm" id="ath-strava-btn" onclick="connectAthleteStrava()">⚡ Connecter Strava</button>
+            <button class="btn btn-ghost btn-sm" onclick="enterAthleteMode()">👤 Vue Athlète</button>
+            <button class="btn btn-ghost btn-sm btn-danger" onclick="confirmDeleteAthlete()">🗑 Supprimer</button>
+          </div>
         </div>
         <div class="grid-6-4">
           <div class="card">
@@ -512,9 +544,10 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
           <div>
             <div class="card" style="margin-bottom:12px">
               <div class="card-head">
-                <div class="card-title">⚡ Activités Strava</div>
+                <div class="card-title">⚡ Strava</div>
                 <button class="btn btn-ghost btn-sm" id="ath-sync-btn" onclick="syncCurrentAthlete()">Sync</button>
               </div>
+              <div id="ath-strava-status"></div>
               <div id="ath-strava-feed"></div>
             </div>
             <div class="card">
@@ -629,6 +662,18 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addNote')">Annuler</button>
       <button class="btn btn-accent" onclick="doSaveNote()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Athlete Confirmation -->
+<div class="overlay" id="modal-deleteAthlete">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header"><div class="modal-title">Supprimer l'athlète</div><div class="modal-close" onclick="closeModal('deleteAthlete')">✕</div></div>
+    <p style="font-size:13px;color:var(--text2);margin:16px 0">Supprimer <strong id="delete-ath-name"></strong> ? Toutes ses séances, activités Strava et notes seront supprimées définitivement.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('deleteAthlete')">Annuler</button>
+      <button class="btn btn-danger" onclick="doDeleteAthlete()">Supprimer définitivement</button>
     </div>
   </div>
 </div>
@@ -1263,6 +1308,17 @@ function updateAthletePanel() {
   btn.textContent=a.token?'⚡ Strava connecté':'⚡ Connecter Strava';
   btn.onclick=()=>connectAthleteStrava(a.id);
 
+  // Strava status panel
+  const statusEl=document.getElementById('ath-strava-status');
+  if(a.token){
+    const exp=a.expiresAt?new Date(a.expiresAt*1000):null;
+    const expStr=exp?exp.toLocaleDateString('fr',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+    const totalActs=S.activities.filter(x=>x.athId===a.id).length;
+    statusEl.innerHTML=`<div class="strava-status-panel"><span class="sc-chip sc-on">⚡ Connecté</span><div class="sc-meta">${totalActs} activité${totalActs>1?'s':''} synchronisée${totalActs>1?'s':''} · Expire le ${expStr}</div><button class="btn btn-ghost btn-sm" onclick="disconnectStrava(${a.id})" style="font-size:10px;color:var(--text3)">Déconnecter</button></div>`;
+  } else {
+    statusEl.innerHTML=`<div class="strava-status-panel"><span class="sc-chip sc-off">Non connecté</span><div class="sc-meta">Envoie le lien OAuth à l'athlète pour connecter Strava</div><button class="btn btn-strava btn-sm" onclick="connectAthleteStrava(${a.id})">⚡ Connecter</button></div>`;
+  }
+
   // Week program
   const today=new Date(); today.setHours(0,0,0,0);
   const dayNames=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
@@ -1279,7 +1335,7 @@ function updateAthletePanel() {
         rows+=`<tr class="${isT?'today-row':''}">
           <td><div class="day-lbl">${dayNames[i]}</div><div class="day-date">${day.getDate()} ${day.toLocaleString('fr',{month:'short'})}</div></td>
           <td><div style="font-size:13px;font-weight:600">${TYPE_ICONS[s.type]||'🏃'} ${s.titre}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${[s.dur?s.dur+'min':null,s.dist?s.dist+'km':null,s.dp?'+'+s.dp+'m D+':null,s.allure].filter(Boolean).join(' · ')}</div>${s.desc?`<div style="font-size:10px;color:var(--text3);font-style:italic;margin-top:2px">${s.desc}</div>`:''}</td>
-          <td><div class="sess-pill ${sc}">${sl}</div></td>
+          <td><div class="sess-pill ${sc}" onclick="toggleSession(${s.id})">${sl}</div></td>
         </tr>`;
       });
     } else {
@@ -1419,6 +1475,64 @@ function showToast(msg,type='ok'){
     setTimeout(()=>exchangeCode(code,state),500);
   }
 })();
+
+// ══════════════════════════════════════════════════════════════
+//  ATHLETE MODE
+// ══════════════════════════════════════════════════════════════
+
+function enterAthleteMode(){
+  const a=S.athletes[S.currentAthlete]; if(!a) return;
+  document.body.classList.add('athlete-mode');
+  document.getElementById('ath-mode-name').textContent=`👤 ${a.prenom} ${a.nom}`;
+  showView('athlete');
+}
+
+function exitAthleteMode(){
+  document.body.classList.remove('athlete-mode');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DELETE ATHLETE
+// ══════════════════════════════════════════════════════════════
+
+function confirmDeleteAthlete(){
+  const a=S.athletes[S.currentAthlete]; if(!a) return;
+  document.getElementById('delete-ath-name').textContent=`${a.prenom} ${a.nom}`;
+  openModal('deleteAthlete');
+}
+
+function doDeleteAthlete(){
+  const a=S.athletes[S.currentAthlete]; if(!a) return;
+  const id=a.id, name=`${a.prenom} ${a.nom}`;
+  S.athletes.splice(S.currentAthlete,1);
+  S.sessions=S.sessions.filter(s=>s.athId!==id);
+  S.activities=S.activities.filter(x=>x.athId!==id);
+  S.notes=S.notes.filter(n=>n.athId!==id);
+  S.currentAthlete=Math.min(S.currentAthlete,Math.max(0,S.athletes.length-1));
+  save(); closeModal('deleteAthlete');
+  showToast(`${name} supprimé(e) ✓`,'ok');
+  renderSidebar(); renders[currentView]?.();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  STRAVA DISCONNECT
+// ══════════════════════════════════════════════════════════════
+
+function disconnectStrava(athId){
+  const a=S.athletes.find(x=>x.id===athId); if(!a) return;
+  Object.assign(a,{token:null,refreshToken:null,expiresAt:0,stravaId:null,stravaProfile:null,stravaCity:null});
+  save(); showToast('Strava déconnecté ✓','ok');
+  renderSidebar(); updateAthletePanel();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SESSION TOGGLE (athlète peut marquer réalisé)
+// ══════════════════════════════════════════════════════════════
+
+function toggleSession(sessId){
+  const s=S.sessions.find(x=>x.id===sessId); if(!s) return;
+  s.done=!s.done; save(); updateAthletePanel();
+}
 
 // ══════════════════════════════════════════════════════════════
 //  INIT

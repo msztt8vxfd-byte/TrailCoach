@@ -532,6 +532,7 @@ body.athlete-mode #ath-selector{display:none!important}
           </div>
           <div class="hero-actions">
             <button class="btn btn-strava btn-sm" id="ath-strava-btn" onclick="connectAthleteStrava()">⚡ Connecter Strava</button>
+            <button class="btn btn-ghost btn-sm" onclick="openAthleteLink()">📤 Lien athlète</button>
             <button class="btn btn-ghost btn-sm" onclick="enterAthleteMode()">👤 Vue Athlète</button>
             <button class="btn btn-ghost btn-sm btn-danger" onclick="confirmDeleteAthlete()">🗑 Supprimer</button>
           </div>
@@ -662,6 +663,20 @@ body.athlete-mode #ath-selector{display:none!important}
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addNote')">Annuler</button>
       <button class="btn btn-accent" onclick="doSaveNote()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Athlete Link -->
+<div class="overlay" id="modal-shareLink">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📤 Lien athlète</div><div class="modal-close" onclick="closeModal('shareLink')">✕</div></div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Envoie ce lien à <strong id="share-ath-name">l'athlète</strong> par SMS ou email. Il s'ouvre sur son interface personnelle (programme + activités Strava) sur n'importe quel appareil.</p>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:10px;font-family:var(--font-m);word-break:break-all;color:var(--text2);max-height:90px;overflow:auto;line-height:1.6" id="share-link-url">—</div>
+    <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7">⚠ Le lien contient une copie des données actuelles. Régénère-le après chaque modification du programme.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('shareLink')">Fermer</button>
+      <button class="btn btn-accent" onclick="copyShareLink()">📋 Copier le lien</button>
     </div>
   </div>
 </div>
@@ -1475,6 +1490,48 @@ function showToast(msg,type='ok'){
     setTimeout(()=>exchangeCode(code,state),500);
   }
 })();
+
+// ══════════════════════════════════════════════════════════════
+//  ATHLETE LINK (interface séparée sur athlete.html)
+// ══════════════════════════════════════════════════════════════
+
+function encodeAthleteLink(athId){
+  const a=S.athletes.find(x=>x.id===athId); if(!a) return null;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const past3=new Date(today); past3.setDate(today.getDate()-3);
+  const in14=new Date(today); in14.setDate(today.getDate()+14);
+  const sessions=S.sessions
+    .filter(s=>s.athId===athId&&new Date(s.date)>=past3&&new Date(s.date)<=in14)
+    .map(s=>({id:s.id,d:s.date,t:s.type,ti:s.titre,dur:s.dur,dist:s.dist,dp:s.dp,al:s.allure,de:s.desc,ok:s.done}));
+  const activities=S.activities
+    .filter(x=>x.athId===athId)
+    .sort((x,y)=>new Date(y.date)-new Date(x.date))
+    .slice(0,8)
+    .map(x=>({n:x.nom,d:x.date,t:x.type,km:x.distM,sec:x.sec,dp:x.dp,al:x.allur,fc:x.fc}));
+  const payload={v:1,ts:Math.floor(Date.now()/1000),a:{id:a.id,p:a.prenom,n:a.nom,col:a.color,niv:a.niv,obj:a.obj,disc:a.disc},s:sessions,ac:activities};
+  return SITE_URL+'/athlete.html#'+btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function openAthleteLink(){
+  const a=S.athletes[S.currentAthlete]; if(!a) return;
+  const url=encodeAthleteLink(a.id); if(!url) return;
+  document.getElementById('share-ath-name').textContent=`${a.prenom} ${a.nom}`;
+  const el=document.getElementById('share-link-url');
+  el.textContent=url; el.setAttribute('data-url',url);
+  openModal('shareLink');
+}
+
+function copyShareLink(){
+  const url=document.getElementById('share-link-url').getAttribute('data-url')||'';
+  if(!url) return;
+  navigator.clipboard.writeText(url)
+    .then(()=>showToast('Lien copié ✓','ok'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');ta.value=url;
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');
+      document.body.removeChild(ta);showToast('Lien copié ✓','ok');
+    });
+}
 
 // ══════════════════════════════════════════════════════════════
 //  ATHLETE MODE

@@ -396,11 +396,11 @@ body.athlete-mode #ath-selector{display:none!important}
       <div id="sidebar-aths"></div>
       <div class="nav-item" style="color:var(--text3)" onclick="openModal('addAthlete')">+ Ajouter</div>
       <div class="sidebar-footer">
-        <div class="coach-pill">
+        <div class="coach-pill" style="cursor:pointer" onclick="openModal('settings')">
           <div class="coach-av">TC</div>
           <div>
             <div style="font-size:11px;font-weight:600" id="coach-name-display">TrailCoach</div>
-            <div style="font-size:10px;color:var(--text3)">Coach Trail</div>
+            <div style="font-size:10px;color:var(--text3)">⚙ Réglages &amp; Cloud</div>
           </div>
         </div>
       </div>
@@ -613,6 +613,10 @@ body.athlete-mode #ath-selector{display:none!important}
       <div class="fg"><label class="fl">Niveau</label><select class="fs" id="ath-niveau"><option>Débutant</option><option>Amateur</option><option>Compétition</option><option>Semi-Pro</option></select></div>
     </div>
     <div class="fg"><label class="fl">Objectif</label><input class="fi" id="ath-obj" placeholder="ex: GTVO 2026, UTMB 2026…"></div>
+    <div class="form-row">
+      <div class="fg"><label class="fl">PIN athlète (4 chiffres)</label><input class="fi" id="ath-pin" type="text" maxlength="4" pattern="[0-9]*" placeholder="ex : 4821" style="font-family:var(--font-m);letter-spacing:.15em"></div>
+      <div class="fg" style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="genPin()">🎲 Générer</button></div>
+    </div>
     <div class="fg">
       <label class="fl">Couleur</label>
       <div class="color-picker" id="color-picker">
@@ -671,12 +675,42 @@ body.athlete-mode #ath-selector{display:none!important}
 <div class="overlay" id="modal-shareLink">
   <div class="modal">
     <div class="modal-header"><div class="modal-title">📤 Lien athlète</div><div class="modal-close" onclick="closeModal('shareLink')">✕</div></div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Envoie ce lien à <strong id="share-ath-name">l'athlète</strong> par SMS ou email. Il s'ouvre sur son interface personnelle (programme + activités Strava) sur n'importe quel appareil.</p>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:10px;font-family:var(--font-m);word-break:break-all;color:var(--text2);max-height:90px;overflow:auto;line-height:1.6" id="share-link-url">—</div>
-    <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7">⚠ Le lien contient une copie des données actuelles. Régénère-le après chaque modification du programme.</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:14px">Interface de <strong id="share-ath-name">l'athlète</strong> — lien permanent, données toujours à jour.</p>
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Lien (à envoyer une seule fois)</label>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:10px;font-family:var(--font-m);word-break:break-all;color:var(--text2);line-height:1.6" id="share-link-url">—</div>
+    </div>
+    <div class="fg" style="margin-bottom:4px">
+      <label class="fl">PIN (à communiquer séparément — SMS, à l'oral…)</label>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:18px;font-family:var(--font-m);font-weight:700;color:var(--accent);letter-spacing:.25em;display:inline-block" id="share-ath-pin">—</div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('shareLink')">Fermer</button>
       <button class="btn btn-accent" onclick="copyShareLink()">📋 Copier le lien</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings / Cloud Config -->
+<div class="overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">⚙ Réglages &amp; Cloud</div><div class="modal-close" onclick="closeModal('settings')">✕</div></div>
+    <div style="margin-bottom:20px">
+      <div class="fl" style="margin-bottom:8px">Token Coach (COACH_TOKEN)</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:11px;font-family:var(--font-m);color:var(--accent);word-break:break-all" id="coach-token-display">—</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyCoachToken()" title="Copier">📋</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.8;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+        1. Copie ce token<br>
+        2. Va sur <strong style="color:var(--text2)">Netlify → ton site → Site configuration → Environment variables</strong><br>
+        3. Ajoute la variable <code style="background:var(--surface2);padding:1px 5px;border-radius:4px;color:var(--accent)">COACH_TOKEN</code> avec cette valeur<br>
+        4. Redéploie le site
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="generateCoachToken()">🔄 Nouveau token</button>
+      <button class="btn btn-ghost" onclick="closeModal('settings')">Fermer</button>
     </div>
   </div>
 </div>
@@ -739,6 +773,7 @@ const TYPE_ICONS = {EF:'🏃',FRAC:'🔥',TRAIL:'🏔',TEMPO:'⚡',RECUP:'♻'};
 
 const S = {
   stravaClientId: '',
+  coachToken: '',
   athletes: [],
   sessions: [],
   activities: [],
@@ -988,6 +1023,7 @@ async function syncCurrentAthlete() {
   const n = await fetchActivities(a);
   document.getElementById('ath-sync-btn').innerHTML = 'Sync';
   showToast(n ? `✅ ${n} activités chargées` : 'Déjà à jour', 'ok');
+  if(n) syncAthleteToCloud(a.id);
   updateAthletePanel();
 }
 
@@ -1406,6 +1442,11 @@ function openModal(id) {
     document.getElementById('sess-ath').innerHTML=S.athletes.map(a=>`<option value="${a.id}">${a.prenom} ${a.nom}</option>`).join('');
     document.getElementById('sess-date').value=new Date().toISOString().split('T')[0];
   }
+  if(id==='addAthlete') genPin();
+  if(id==='settings'){
+    const el=document.getElementById('coach-token-display');
+    if(el) el.textContent=S.coachToken||'—';
+  }
   document.getElementById('modal-'+id).classList.add('open');
 }
 function closeModal(id){ document.getElementById('modal-'+id).classList.remove('open'); }
@@ -1428,6 +1469,7 @@ function doSaveSession(){
   });
   save(); closeModal('addSession'); showToast('Séance programmée ✓','ok');
   ['sess-title','sess-dur','sess-dist','sess-dp','sess-allure','sess-desc'].forEach(id=>{document.getElementById(id).value='';});
+  syncAthleteToCloud(athId);
   renders[currentView]?.();
 }
 
@@ -1437,16 +1479,20 @@ function doSaveAthlete(){
   const prenom=document.getElementById('ath-prenom').value.trim();
   const nom=document.getElementById('ath-nom').value.trim();
   if(!prenom||!nom){showToast('Prénom et nom requis','err');return;}
-  S.athletes.push({
+  const pin=document.getElementById('ath-pin').value.trim()||String(Math.floor(1000+Math.random()*9000));
+  const ath={
     id:uid(), prenom, nom,
     email:document.getElementById('ath-email').value,
     disc:document.getElementById('ath-disc').value,
     niv:document.getElementById('ath-niveau').value,
     obj:document.getElementById('ath-obj').value,
     color:_pickedColor, token:null, refreshToken:null, expiresAt:0, stravaId:null,
-  });
+    pin,
+  };
+  S.athletes.push(ath);
   save(); closeModal('addAthlete'); showToast('Athlète ajouté ✓','ok');
   ['ath-prenom','ath-nom','ath-email','ath-obj'].forEach(id=>{document.getElementById(id).value='';});
+  syncAthleteToCloud(ath.id);
   renderSidebar(); renders[currentView]?.();
 }
 
@@ -1492,32 +1538,69 @@ function showToast(msg,type='ok'){
 })();
 
 // ══════════════════════════════════════════════════════════════
-//  ATHLETE LINK (interface séparée sur athlete.html)
+//  COACH TOKEN & SETTINGS
 // ══════════════════════════════════════════════════════════════
 
-function encodeAthleteLink(athId){
-  const a=S.athletes.find(x=>x.id===athId); if(!a) return null;
+function generateCoachToken(){
+  S.coachToken=Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  save();
+  const el=document.getElementById('coach-token-display');
+  if(el) el.textContent=S.coachToken;
+  showToast('Nouveau token généré — mets à jour COACH_TOKEN dans Netlify','info');
+}
+
+function copyCoachToken(){
+  navigator.clipboard.writeText(S.coachToken||'').then(()=>showToast('Token copié ✓','ok'));
+}
+
+function genPin(){
+  const el=document.getElementById('ath-pin');
+  if(el) el.value=String(Math.floor(1000+Math.random()*9000));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SYNC ATHLETE → NETLIFY BLOBS
+// ══════════════════════════════════════════════════════════════
+
+async function syncAthleteToCloud(athId){
+  const a=S.athletes.find(x=>x.id===athId);
+  if(!a||!S.coachToken) return;
+
   const today=new Date(); today.setHours(0,0,0,0);
-  const past3=new Date(today); past3.setDate(today.getDate()-3);
-  const in14=new Date(today); in14.setDate(today.getDate()+14);
+  const past7=new Date(today); past7.setDate(today.getDate()-7);
+  const in30=new Date(today); in30.setDate(today.getDate()+30);
+
   const sessions=S.sessions
-    .filter(s=>s.athId===athId&&new Date(s.date)>=past3&&new Date(s.date)<=in14)
+    .filter(s=>s.athId===athId&&new Date(s.date)>=past7&&new Date(s.date)<=in30)
     .map(s=>({id:s.id,d:s.date,t:s.type,ti:s.titre,dur:s.dur,dist:s.dist,dp:s.dp,al:s.allure,de:s.desc,ok:s.done}));
+
   const activities=S.activities
     .filter(x=>x.athId===athId)
     .sort((x,y)=>new Date(y.date)-new Date(x.date))
-    .slice(0,8)
+    .slice(0,20)
     .map(x=>({n:x.nom,d:x.date,t:x.type,km:x.distM,sec:x.sec,dp:x.dp,al:x.allur,fc:x.fc}));
-  const payload={v:1,ts:Math.floor(Date.now()/1000),a:{id:a.id,p:a.prenom,n:a.nom,col:a.color,niv:a.niv,obj:a.obj,disc:a.disc},s:sessions,ac:activities};
-  return SITE_URL+'/athlete.html#'+btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+
+  try {
+    const res=await fetch('/api/athlete-data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Coach-Token':S.coachToken},
+      body:JSON.stringify({id:a.id,pin:a.pin||'0000',prenom:a.prenom,nom:a.nom,color:a.color,niv:a.niv,obj:a.obj,disc:a.disc,sessions,activities})
+    });
+    if(!res.ok){const e=await res.json();showToast('Cloud: '+e.error,'err');}
+  } catch(e){ /* silencieux si pas encore déployé */ }
 }
+
+// ══════════════════════════════════════════════════════════════
+//  ATHLETE LINK (lien permanent → athlete.html?id=X)
+// ══════════════════════════════════════════════════════════════
 
 function openAthleteLink(){
   const a=S.athletes[S.currentAthlete]; if(!a) return;
-  const url=encodeAthleteLink(a.id); if(!url) return;
+  const url=SITE_URL+'/athlete.html?id='+a.id;
   document.getElementById('share-ath-name').textContent=`${a.prenom} ${a.nom}`;
   const el=document.getElementById('share-link-url');
   el.textContent=url; el.setAttribute('data-url',url);
+  document.getElementById('share-ath-pin').textContent=a.pin||'—';
   openModal('shareLink');
 }
 
@@ -1567,6 +1650,7 @@ function doDeleteAthlete(){
   S.notes=S.notes.filter(n=>n.athId!==id);
   S.currentAthlete=Math.min(S.currentAthlete,Math.max(0,S.athletes.length-1));
   save(); closeModal('deleteAthlete');
+  if(S.coachToken) fetch('/api/athlete-data?id='+id,{method:'DELETE',headers:{'X-Coach-Token':S.coachToken}}).catch(()=>{});
   showToast(`${name} supprimé(e) ✓`,'ok');
   renderSidebar(); renders[currentView]?.();
 }
@@ -1588,7 +1672,9 @@ function disconnectStrava(athId){
 
 function toggleSession(sessId){
   const s=S.sessions.find(x=>x.id===sessId); if(!s) return;
-  s.done=!s.done; save(); updateAthletePanel();
+  s.done=!s.done; save();
+  syncAthleteToCloud(s.athId);
+  updateAthletePanel();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1598,6 +1684,12 @@ function toggleSession(sessId){
 (function init(){
   const hasData=load();
   if(!hasData||!S.athletes.length) loadDemoData();
+
+  // Génère un token coach au premier lancement
+  if(!S.coachToken){
+    S.coachToken=Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b=>b.toString(16).padStart(2,'0')).join('');
+    save();
+  }
 
   // Setup : montrer si pas de client ID
   if(!S.stravaClientId){

@@ -9,5 +9,8 @@
   "scripts": {
     "zip": "zip -r trailcoach-netlify.zip trailcoach-netlify/"
   },
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0"
+  },
   "devDependencies": {}
 }

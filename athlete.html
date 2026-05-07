@@ -25,19 +25,45 @@
 html{height:100%;background:var(--bg)}
 body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100%;padding-bottom:48px}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+a{color:inherit;text-decoration:none}
 
 /* ── HEADER ── */
 .header{background:var(--bg1);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--font-d);font-weight:800;font-style:italic;font-size:18px}
 .logo em{color:var(--accent);font-style:normal}
+.header-right{display:flex;align-items:center;gap:10px}
 .ath-badge{font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border2);padding:3px 10px;border-radius:20px;color:var(--text2)}
+.btn-refresh{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;color:var(--text2);font-family:var(--font-b);transition:background .15s}
+.btn-refresh:hover{background:var(--surface2)}
+
+/* ── PIN SCREEN ── */
+.pin-screen{max-width:360px;margin:80px auto;padding:0 24px;text-align:center}
+.pin-logo{font-family:var(--font-d);font-size:28px;font-weight:800;font-style:italic;margin-bottom:8px}
+.pin-logo em{color:var(--accent);font-style:normal}
+.pin-sub{font-size:13px;color:var(--text2);margin-bottom:32px}
+.pin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px}
+.pin-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.pin-hint{font-size:12px;color:var(--text3);margin-bottom:20px;line-height:1.6}
+.pin-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px;font-size:24px;font-family:var(--font-m);font-weight:700;color:var(--accent);text-align:center;letter-spacing:.3em;outline:none;transition:border-color .15s}
+.pin-input:focus{border-color:var(--accent-glow)}
+.pin-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pin-btn{width:100%;margin-top:14px;padding:13px;background:var(--accent);border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:var(--font-b);color:#000;cursor:pointer;transition:opacity .15s}
+.pin-btn:hover{opacity:.88}
+.pin-btn:disabled{opacity:.4;cursor:not-allowed}
+.pin-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:80px 20px;color:var(--text3);font-size:13px}
+.spin{display:inline-block;animation:rot 1s linear infinite;font-size:24px;margin-bottom:12px}
+@keyframes rot{to{transform:rotate(360deg)}}
 
 /* ── CONTENT ── */
 .page{max-width:680px;margin:0 auto;padding:20px 16px}
 
 /* ── HERO ── */
 .hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;display:flex;gap:18px;align-items:flex-start;margin-bottom:20px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:var(--hero-color,transparent);pointer-events:none}
+.hero::before{content:'';position:absolute;inset:0;background:var(--hero-bg,transparent);pointer-events:none}
 .avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:20px;color:#000;flex-shrink:0;position:relative;z-index:1}
 .hero-body{flex:1;position:relative;z-index:1}
 .hero-name{font-family:var(--font-d);font-size:24px;font-weight:800;font-style:italic;line-height:1.1;margin-bottom:6px}
@@ -46,18 +72,13 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
 .hkpi-val{font-family:var(--font-m);font-size:20px;font-weight:700;color:var(--accent)}
 .hkpi-lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
 
-/* ── COUNTDOWN ── */
-.countdown{display:inline-flex;align-items:center;gap:7px;background:var(--accent-dim);border:1px solid var(--accent-glow);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--accent);font-family:var(--font-m);margin-bottom:20px}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── SECTION HEADER ── */
+/* ── SECTION ── */
 .sect{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin:28px 0 12px}
 
 /* ── SESSION CARDS ── */
-.scard{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
 .scard.today{border-color:rgba(232,255,71,.4);box-shadow:0 0 20px var(--accent-dim)}
-.scard.done{opacity:.6}
+.scard.done{opacity:.65}
 .scard-head{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
 .scard-dayname{font-weight:700;font-size:13px;flex:1}
 .scard-date{font-size:11px;color:var(--text3);font-family:var(--font-m)}
@@ -85,40 +106,41 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);font-size:
 .rest-date{font-size:11px;color:var(--text3);font-family:var(--font-m)}
 .rest-lbl{font-size:11px;color:var(--text3);font-style:italic}
 
-/* ── STRAVA ACTIVITIES ── */
+/* ── STRAVA ── */
 .act{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
 .act-icon{font-size:22px;margin-top:2px}
 .act-info{flex:1}
 .act-name{font-size:13px;font-weight:700;margin-bottom:4px}
 .act-date{font-size:11px;color:var(--text3);margin-bottom:8px}
-.act-metrics{display:flex;gap:12px;flex-wrap:wrap}
+.act-metrics{display:flex;gap:8px;flex-wrap:wrap}
 .act-m{font-size:12px;font-family:var(--font-m);color:var(--text2);background:var(--surface2);padding:2px 7px;border-radius:6px}
 
-/* ── EMPTY WEEK ── */
-.no-acts{padding:20px;text-align:center;font-size:12px;color:var(--text3)}
-
-/* ── ERROR ── */
-.err-wrap{max-width:400px;margin:80px auto;text-align:center;padding:0 24px}
-.err-icon{font-size:52px;margin-bottom:20px}
-.err-title{font-family:var(--font-d);font-size:24px;font-weight:800;font-style:italic;margin-bottom:10px}
-.err-msg{font-size:13px;color:var(--text2);line-height:1.8}
+/* ── UPDATED AT ── */
+.updated-at{font-size:10px;color:var(--text3);text-align:center;margin-top:4px;margin-bottom:-4px}
 
 /* ── FOOTER ── */
 .footer{text-align:center;font-size:11px;color:var(--text3);padding:32px 20px 8px;border-top:1px solid var(--border);margin-top:40px;line-height:2}
-.footer a{color:var(--text2);text-decoration:none}
 
-/* ── STALE NOTICE ── */
-.stale-notice{background:var(--orange-dim);border:1px solid rgba(255,107,53,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--orange);line-height:1.7}
+/* ── ERROR ── */
+.err-box{max-width:400px;margin:80px auto;text-align:center;padding:0 24px}
+.err-icon{font-size:52px;margin-bottom:20px}
+.err-title{font-family:var(--font-d);font-size:24px;font-weight:800;font-style:italic;margin-bottom:10px}
+.err-msg{font-size:13px;color:var(--text2);line-height:1.8}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="logo">Trail<em>.</em>Coach</div>
-  <div class="ath-badge" id="header-name">Programme</div>
+  <div class="header-right">
+    <div class="ath-badge" id="header-name">Programme</div>
+    <button class="btn-refresh" id="btn-refresh" style="display:none" onclick="refreshData()">↻ Rafraîchir</button>
+  </div>
 </div>
 
-<div class="page" id="app"></div>
+<div id="app">
+  <div class="loading"><div class="spin">⟳</div><br>Chargement…</div>
+</div>
 
 <script>
 const ICONS={EF:'🏃',FRAC:'🔥',TRAIL:'🏔',TEMPO:'⚡',RECUP:'♻'};
@@ -127,10 +149,14 @@ const LABELS={EF:'EF',FRAC:'FRAC',TRAIL:'TRAIL',TEMPO:'TEMPO',RECUP:'RÉCUP'};
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const MONTHS=['jan','fév','mars','avr','mai','juin','juil','août','sep','oct','nov','déc'];
 
+const params=new URLSearchParams(window.location.search);
+const ATH_ID=params.get('id');
+const PIN_KEY=ATH_ID?`ath_pin_${ATH_ID}`:null;
+
 function fmtDist(m){return m>=1000?(m/1000).toFixed(1)+' km':m+'m'}
 function fmtDur(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h?`${h}h${String(m).padStart(2,'0')}`:`${m}min`}
-function fmtPace(al){if(!al)return null;const mpm=al/1000;const m=Math.floor(mpm);const s=Math.round((mpm-m)*60);return `${m}:${String(s).padStart(2,'0')}/km`}
-function fmtDate(d){const dt=new Date(d);return `${dt.getDate()} ${MONTHS[dt.getMonth()]}`}
+function fmtPace(al){if(!al)return null;const mpm=al/1000;const m=Math.floor(mpm);const s=Math.round((mpm-m)*60);return`${m}:${String(s).padStart(2,'0')}/km`}
+function fmtDate(d){const dt=new Date(d);return`${dt.getDate()} ${MONTHS[dt.getMonth()]}`}
 function initials(p,n){return((p||'')[0]||'').toUpperCase()+((n||'')[0]||'').toUpperCase()}
 
 function getMon(){
@@ -139,69 +165,107 @@ function getMon(){
   return d;
 }
 
-function decode(){
-  const h=window.location.hash.slice(1);
-  if(!h)return null;
-  try{return JSON.parse(decodeURIComponent(escape(atob(h))));}catch(e){return null;}
+async function fetchData(pin){
+  const res=await fetch(`/api/athlete-data?id=${ATH_ID}&pin=${encodeURIComponent(pin)}`);
+  if(!res.ok){const e=await res.json();throw new Error(e.error||'Erreur '+res.status);}
+  return res.json();
 }
 
-function renderError(msg){
+function showPinScreen(errMsg=''){
   document.getElementById('app').innerHTML=`
-    <div class="err-wrap">
-      <div class="err-icon">🏔</div>
-      <div class="err-title">Lien invalide</div>
-      <div class="err-msg">${msg}<br><br>Demande à ton coach un nouveau lien.</div>
+    <div class="pin-screen">
+      <div class="pin-logo">Trail<em>.</em>Coach</div>
+      <div class="pin-sub">Entre ton PIN pour accéder à ton programme</div>
+      <div class="pin-card">
+        <div class="pin-title">Code PIN</div>
+        <div class="pin-hint">Ton coach t'a communiqué un code à 4 chiffres.</div>
+        <input class="pin-input" id="pin-input" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="• • • •" autocomplete="off">
+        <button class="pin-btn" id="pin-btn" onclick="submitPin()">Accéder →</button>
+        <div class="pin-err" id="pin-err">${errMsg}</div>
+      </div>
     </div>`;
+  const inp=document.getElementById('pin-input');
+  inp.focus();
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')submitPin();});
 }
 
-function render(data){
-  const {a,s,ac,ts}=data;
-  const app=document.getElementById('app');
-  document.getElementById('header-name').textContent=`${a.p} ${a.n[0]}.`;
-  document.title=`TrailCoach — ${a.p} ${a.n}`;
+async function submitPin(){
+  const inp=document.getElementById('pin-input');
+  const btn=document.getElementById('pin-btn');
+  const errEl=document.getElementById('pin-err');
+  const pin=(inp.value||'').trim();
+  if(pin.length!==4){errEl.textContent='Le PIN doit contenir 4 chiffres.';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),500);return;}
+  btn.disabled=true;btn.textContent='Vérification…';errEl.textContent='';
+  try{
+    const data=await fetchData(pin);
+    localStorage.setItem(PIN_KEY,pin);
+    renderApp(data);
+  }catch(e){
+    btn.disabled=false;btn.textContent='Accéder →';
+    errEl.textContent=e.message==='PIN incorrect'?'PIN incorrect. Vérifie auprès de ton coach.':'Erreur : '+e.message;
+    inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),500);
+    inp.value='';inp.focus();
+  }
+}
+
+async function refreshData(){
+  const btn=document.getElementById('btn-refresh');
+  if(btn)btn.textContent='⟳';
+  const pin=localStorage.getItem(PIN_KEY);
+  if(!pin){showPinScreen();return;}
+  try{
+    const data=await fetchData(pin);
+    renderApp(data);
+  }catch(e){
+    if(e.message==='PIN incorrect'){localStorage.removeItem(PIN_KEY);showPinScreen('Session expirée — entre ton PIN à nouveau.');}
+    else{if(btn)btn.textContent='↻ Rafraîchir';}
+  }
+}
+
+function renderApp(data){
+  const {prenom,nom,color,niv,obj,disc,sessions=[],activities=[],updatedAt}=data;
+
+  document.getElementById('header-name').textContent=`${prenom} ${nom[0]}.`;
+  document.getElementById('btn-refresh').style.display='';
+  document.getElementById('btn-refresh').textContent='↻ Rafraîchir';
+  document.title=`TrailCoach — ${prenom} ${nom}`;
 
   const today=new Date();today.setHours(0,0,0,0);
   const mon=getMon();
   const sun=new Date(mon);sun.setDate(mon.getDate()+7);
 
-  // Week stats
-  const weekSess=(s||[]).filter(x=>{const d=new Date(x.d);d.setHours(0,0,0,0);return d>=mon&&d<sun;});
+  const weekSess=sessions.filter(x=>{const d=new Date(x.d);d.setHours(0,0,0,0);return d>=mon&&d<sun;});
   const done=weekSess.filter(x=>x.ok).length;
   const kmPlanned=weekSess.reduce((acc,x)=>acc+(x.dist||0),0);
 
-  // Days since link generated
-  const daysOld=ts?Math.floor((Date.now()-ts*1000)/86400000):0;
+  let html=`
+    <div class="page">
+      <div class="hero" style="--hero-bg:${color}18">
+        <div class="avatar" style="background:${color}">${initials(prenom,nom)}</div>
+        <div class="hero-body">
+          <div class="hero-name">${prenom} ${nom}</div>
+          <div class="hero-meta">${disc} · ${niv}<br>${obj}</div>
+          <div class="hero-kpis">
+            <div><div class="hkpi-val">${kmPlanned.toFixed(0)}</div><div class="hkpi-lbl">km planifiés</div></div>
+            <div><div class="hkpi-val">${done}/${weekSess.length||0}</div><div class="hkpi-lbl">séances</div></div>
+          </div>
+        </div>
+      </div>`;
 
-  let html='';
-
-  // Stale warning (> 7 days old)
-  if(daysOld>7){
-    html+=`<div class="stale-notice">⚠ Ce lien a été généré il y a ${daysOld} jours. Le programme affiché peut ne plus être à jour — demande à ton coach un nouveau lien.</div>`;
+  if(updatedAt){
+    const upd=new Date(updatedAt);
+    html+=`<div class="updated-at">Mis à jour le ${upd.toLocaleDateString('fr',{day:'numeric',month:'long'})} à ${upd.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</div>`;
   }
 
-  // Hero
-  html+=`
-    <div class="hero" style="--hero-color:${a.col}18">
-      <div class="avatar" style="background:${a.col}">${initials(a.p,a.n)}</div>
-      <div class="hero-body">
-        <div class="hero-name">${a.p} ${a.n}</div>
-        <div class="hero-meta">${a.disc} · ${a.niv}<br>${a.obj}</div>
-        <div class="hero-kpis">
-          <div><div class="hkpi-val">${kmPlanned.toFixed(0)}</div><div class="hkpi-lbl">km planifiés</div></div>
-          <div><div class="hkpi-val">${done}/${weekSess.length||0}</div><div class="hkpi-lbl">séances</div></div>
-        </div>
-      </div>
-    </div>`;
-
-  // Programme: Monday this week + 13 more days (2 weeks)
   html+=`<div class="sect">Programme — 2 semaines</div>`;
+
   for(let i=0;i<14;i++){
     const day=new Date(mon);day.setDate(mon.getDate()+i);day.setHours(0,0,0,0);
     const isToday=day.getTime()===today.getTime();
     const isPast=day<today;
     const dname=DAYS[day.getDay()===0?6:day.getDay()-1];
     const ddate=`${day.getDate()} ${MONTHS[day.getMonth()]}`;
-    const daySess=(s||[]).filter(x=>{const sd=new Date(x.d);sd.setHours(0,0,0,0);return sd.getTime()===day.getTime();});
+    const daySess=sessions.filter(x=>{const sd=new Date(x.d);sd.setHours(0,0,0,0);return sd.getTime()===day.getTime();});
 
     if(daySess.length){
       daySess.forEach(sess=>{
@@ -221,7 +285,7 @@ function render(data){
           </div>
         </div>`;
       });
-    } else {
+    }else{
       html+=`<div class="rest${isToday?' scard today':''}">
         <span class="rest-name">${dname}${isToday?` <span class="today-tag" style="margin-left:8px">Aujourd'hui</span>`:''}</span>
         <span class="rest-date">${ddate}</span>
@@ -230,10 +294,9 @@ function render(data){
     }
   }
 
-  // Strava activities
-  if(ac&&ac.length){
+  if(activities.length){
     html+=`<div class="sect">Activités Strava récentes</div>`;
-    ac.forEach(act=>{
+    activities.forEach(act=>{
       const mets=[act.km?fmtDist(act.km):null,act.sec?fmtDur(act.sec):null,act.dp?'+'+act.dp+'m':null,act.al?fmtPace(act.al):null,act.fc?act.fc+' bpm':null].filter(Boolean);
       html+=`<div class="act">
         <div class="act-icon">${act.t==='TrailRun'?'🏔':'🏃'}</div>
@@ -244,19 +307,41 @@ function render(data){
         </div>
       </div>`;
     });
-  } else {
-    html+=`<div class="sect">Activités Strava</div><div class="no-acts">Aucune activité synchronisée pour le moment.</div>`;
   }
 
-  html+=`<div class="footer">Programme établi par ton coach · <a href="/">TrailCoach Pro</a><br>Pour toute question ou modification, contacte ton coach</div>`;
-  app.innerHTML=html;
+  html+=`<div class="footer">Programme établi par ton coach · TrailCoach Pro<br>Contacte ton coach pour toute question ou modification</div>`;
+  html+=`</div>`;
+
+  document.getElementById('app').innerHTML=html;
 }
 
-(function init(){
-  const data=decode();
-  if(!data){renderError('Ce lien ne contient aucune donnée de programme.');return;}
-  if(data.v!==1){renderError('Format de lien obsolète — demande un nouveau lien à ton coach.');return;}
-  render(data);
+function showError(msg){
+  document.getElementById('app').innerHTML=`
+    <div class="err-box">
+      <div class="err-icon">🏔</div>
+      <div class="err-title">Oups</div>
+      <div class="err-msg">${msg}</div>
+    </div>`;
+}
+
+(async function init(){
+  if(!ATH_ID){
+    showError('Lien invalide — aucun identifiant athlète trouvé.<br><br>Demande à ton coach de te renvoyer le lien.');
+    return;
+  }
+
+  const savedPin=localStorage.getItem(PIN_KEY);
+  if(savedPin){
+    try{
+      const data=await fetchData(savedPin);
+      renderApp(data);
+    }catch(e){
+      localStorage.removeItem(PIN_KEY);
+      showPinScreen(e.message==='PIN incorrect'?'':'Erreur de connexion. Entre ton PIN.');
+    }
+  }else{
+    showPinScreen();
+  }
 })();
 </script>
 </body>

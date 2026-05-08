@@ -94,7 +94,11 @@ a{color:inherit;text-decoration:none}
 .scard-metrics{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
 .metric{font-size:12px;font-family:var(--font-m);color:var(--text2)}
 .scard-desc{font-size:12px;color:var(--text3);font-style:italic;line-height:1.7;border-top:1px solid var(--border);padding-top:10px;margin-top:6px}
-.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:10px}
+/* ── SESSION TOGGLE ── */
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:10px;cursor:pointer;transition:opacity .15s,transform .1s;user-select:none}
+.status-pill:hover{opacity:.8}
+.status-pill:active{transform:scale(.95)}
+.status-pill.loading{opacity:.5;cursor:wait}
 .sp-done{background:var(--green-dim);color:var(--green)}
 .sp-plan{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
 .sp-miss{background:var(--red-dim);color:var(--red)}
@@ -281,7 +285,7 @@ function renderApp(data){
             <div class="scard-title">${ICONS[sess.t]||'🏃'} ${sess.ti} <span class="type-pill ${PILLS[sess.t]||'tp-ef'}">${LABELS[sess.t]||sess.t}</span></div>
             ${mets.length?`<div class="scard-metrics">${mets.map(m=>`<span class="metric">${m}</span>`).join('')}</div>`:''}
             ${sess.de?`<div class="scard-desc">${sess.de}</div>`:''}
-            <div style="margin-top:10px"><span class="status-pill ${sc}">${sl}</span></div>
+            <div style="margin-top:10px"><span class="status-pill ${sc}" onclick="toggleSessionDone(this,${JSON.stringify(sess.id)},${sess.ok})">${sl}</span></div>
           </div>
         </div>`;
       });
@@ -313,6 +317,38 @@ function renderApp(data){
   html+=`</div>`;
 
   document.getElementById('app').innerHTML=html;
+}
+
+async function toggleSessionDone(pillEl,sessId,currentDone){
+  if(pillEl.classList.contains('loading'))return;
+  const pin=localStorage.getItem(PIN_KEY);
+  if(!pin){showPinScreen();return;}
+  const newDone=!currentDone;
+  const oldClass=pillEl.className;
+  const oldText=pillEl.textContent;
+  const scard=pillEl.closest('.scard');
+  pillEl.className='status-pill loading';
+  pillEl.textContent=newDone?'✓ Réalisé':'Prévu';
+  try{
+    const res=await fetch('/api/athlete-data',{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:ATH_ID,pin,sessId,done:newDone})
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error||'Erreur '+res.status);}
+    pillEl.className='status-pill '+(newDone?'sp-done':'sp-plan');
+    pillEl.textContent=newDone?'✓ Réalisé':'Prévu';
+    pillEl.setAttribute('onclick',`toggleSessionDone(this,${JSON.stringify(sessId)},${newDone})`);
+    if(scard)scard.classList.toggle('done',newDone);
+  }catch(e){
+    pillEl.className=oldClass;
+    pillEl.textContent=oldText;
+    const errSpan=document.createElement('span');
+    errSpan.style.cssText='font-size:11px;color:var(--red);margin-left:8px';
+    errSpan.textContent='✗ Erreur';
+    pillEl.parentNode.appendChild(errSpan);
+    setTimeout(()=>errSpan.remove(),3000);
+  }
 }
 
 function showError(msg){

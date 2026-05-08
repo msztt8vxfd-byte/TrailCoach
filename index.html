@@ -533,6 +533,7 @@ body.athlete-mode #ath-selector{display:none!important}
           <div class="hero-actions">
             <button class="btn btn-strava btn-sm" id="ath-strava-btn" onclick="connectAthleteStrava()">⚡ Connecter Strava</button>
             <button class="btn btn-ghost btn-sm" onclick="openAthleteLink()">📤 Lien athlète</button>
+            <button class="btn btn-ghost btn-sm" id="btn-pull-cloud" onclick="pullFromCloud()">↙ Sync statuts</button>
             <button class="btn btn-ghost btn-sm" onclick="enterAthleteMode()">👤 Vue Athlète</button>
             <button class="btn btn-ghost btn-sm btn-danger" onclick="confirmDeleteAthlete()">🗑 Supprimer</button>
           </div>
@@ -1588,6 +1589,31 @@ async function syncAthleteToCloud(athId){
     });
     if(!res.ok){const e=await res.json();showToast('Cloud: '+e.error,'err');}
   } catch(e){ /* silencieux si pas encore déployé */ }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PULL ATHLETE DONE STATUS FROM CLOUD → LOCAL
+// ══════════════════════════════════════════════════════════════
+
+async function pullFromCloud(){
+  const a=S.athletes[S.currentAthlete]; if(!a||!a.pin) return;
+  const btn=document.getElementById('btn-pull-cloud');
+  if(btn){btn.disabled=true;btn.textContent='⟳...';}
+  try{
+    const res=await fetch(`/api/athlete-data?id=${a.id}&pin=${encodeURIComponent(a.pin)}`);
+    if(!res.ok){const e=await res.json();showToast('Sync: '+e.error,'err');return;}
+    const data=await res.json();
+    const cloudDone={};
+    (data.sessions||[]).forEach(s=>{if(s.ok)cloudDone[s.id]=true;});
+    let changed=0;
+    S.sessions.forEach(s=>{
+      if(s.athId!==a.id)return;
+      if(cloudDone[s.id]&&!s.done){s.done=true;changed++;}
+    });
+    if(changed){save();renderAthlete();}
+    showToast(changed?`${changed} séance(s) sync. ✓`:'Déjà à jour ✓','ok');
+  }catch(e){showToast('Erreur sync: '+e.message,'err');}
+  finally{if(btn){btn.disabled=false;btn.textContent='↙ Sync statuts';}}
 }
 
 // ══════════════════════════════════════════════════════════════

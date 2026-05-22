@@ -1,0 +1,68 @@
+/* shared.css — variables, reset, and components used by both coach and athlete interfaces */
+:root {
+  --bg:#080a0d; --bg1:#0d1017; --bg2:#111520; --bg3:#161b28;
+  --surface:#1a2030; --surface2:#202536;
+  --border:#252d40; --border2:#2e3850;
+  --accent:#e8ff47; --accent2:#c8e030;
+  --accent-dim:rgba(232,255,71,.1); --accent-glow:rgba(232,255,71,.25);
+  --orange:#ff6b35; --orange-dim:rgba(255,107,53,.12);
+  --blue:#4da6ff; --blue-dim:rgba(77,166,255,.12);
+  --green:#2ecc8a; --green-dim:rgba(46,204,138,.12);
+  --red:#ff4757; --red-dim:rgba(255,71,87,.12);
+  --amber:#ffa31a; --amber-dim:rgba(255,163,26,.1);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,.12);
+  --strava:#fc4c02; --strava-dim:rgba(252,76,2,.12);
+  --text:#e8ecf4; --text2:#8892a8; --text3:#4a5470;
+  --font-d:'Anybody',sans-serif; --font-b:'Familjen Grotesk',sans-serif; --font-m:'JetBrains Mono',monospace;
+  --r:14px; --r-sm:10px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { background:var(--bg) }
+body { font-family:var(--font-b); background:var(--bg); color:var(--text); font-size:14px; line-height:1.5 }
+::-webkit-scrollbar { width:3px; height:3px }
+::-webkit-scrollbar-track { background:transparent }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px }
+a { color:inherit; text-decoration:none }
+
+/* ── Buttons ── */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:7px; font-family:var(--font-b); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; border:none }
+.btn-accent { background:var(--accent); color:#000 }
+.btn-accent:hover { background:var(--accent2); transform:translateY(-1px) }
+.btn-ghost { background:var(--surface); color:var(--text2); border:1px solid var(--border2) }
+.btn-ghost:hover { background:var(--surface2); color:var(--text) }
+.btn-strava { background:var(--strava); color:#fff }
+.btn-strava:hover { background:#e04300 }
+.btn-sm { padding:5px 10px; font-size:11px }
+.btn-danger { background:var(--red-dim); color:var(--red); border:1px solid rgba(255,71,87,.2) }
+
+/* ── Toast ── */
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--surface2); border:1px solid var(--border2); border-radius:10px; padding:10px 18px; font-size:13px; font-weight:600; z-index:999; transition:transform .25s; pointer-events:none; white-space:nowrap }
+.toast.show { transform:translateX(-50%) translateY(0) }
+.toast.ok { background:rgba(46,204,138,.15); border-color:rgba(46,204,138,.3); color:var(--green) }
+.toast.err { background:rgba(255,71,87,.15); border-color:rgba(255,71,87,.3); color:var(--red) }
+
+/* ── Type pills ── */
+.type-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; font-family:var(--font-m); white-space:nowrap; text-transform:uppercase; letter-spacing:.5px }
+.tp-ef { background:var(--green-dim); color:var(--green) }
+.tp-frac { background:var(--orange-dim); color:var(--orange) }
+.tp-trail { background:var(--blue-dim); color:var(--blue) }
+.tp-tempo { background:var(--accent-dim); color:var(--accent) }
+.tp-recup { background:var(--surface2); color:var(--text3) }
+
+/* ── Status pills ── */
+.status-pill { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:9px; cursor:pointer; transition:opacity .15s,transform .1s; user-select:none; white-space:nowrap }
+.status-pill:hover { opacity:.8 }
+.status-pill:active { transform:scale(.94) }
+.status-pill.loading { opacity:.45; cursor:wait; pointer-events:none }
+.sp-done { background:var(--green-dim); color:var(--green) }
+.sp-plan { background:var(--surface2); color:var(--text3); border:1px solid var(--border) }
+.sp-miss { background:var(--red-dim); color:var(--red) }
+.sp-today { background:var(--accent-dim); color:var(--accent); border:1px solid var(--accent-glow) }
+
+/* ── Spin animation ── */
+.spin { display:inline-block; animation:rot 1s linear infinite }
+@keyframes rot { to { transform:rotate(360deg) } }
+
+/* ── Avatar base ── */
+.avatar { border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:var(--font-d); font-weight:800; font-style:italic; color:#000 }

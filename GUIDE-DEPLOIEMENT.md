@@ -1,159 +1,175 @@
-# 🚀 Déployer TrailCoach Pro — Guide complet pas-à-pas
+# 🚀 Déployer & mettre à jour TrailCoach Pro
 
 ---
 
-## Ce que tu vas obtenir
-**https://trailcoach-tonnom.netlify.app** — en ligne, gratuit, HTTPS, avec Strava réel.
+## Première installation
+
+### ① Créer un compte Netlify (2 min)
+
+1. Va sur **https://netlify.com** → **Sign up** → avec ton email ou GitHub
+2. Vérifie ton email → tu arrives sur le dashboard Netlify ✅
 
 ---
 
-## ① Créer un compte Netlify (2 min)
+### ② Déployer le zip (1 min)
 
-1. Va sur → **https://netlify.com**
-2. Clique **"Sign up"** → choisis **"Sign up with email"** (ou GitHub si tu en as un)
-3. Vérifie ton email → clique le lien de confirmation
-4. Tu arrives sur le **dashboard Netlify** ✅
+1. Sur le dashboard Netlify → **"Sites"** → bouton **"Add new site"** → **"Deploy manually"**
+2. Glisse-dépose le fichier **`trailcoach-netlify.zip`** dans la zone de dépôt
+3. Netlify décompresse et déploie automatiquement (20 secondes)
+4. Tu reçois une URL type → `https://amazing-curie-abc123.netlify.app`
 
----
-
-## ② Déployer le dossier (1 min)
-
-1. Sur le dashboard Netlify, tu vois la section **"Sites"**
-2. Repère le cadre avec le texte **"Drag and drop your site output folder here"**
-3. **Glisse-dépose le dossier `trailcoach-netlify`** entier dans cette zone
-4. Netlify déploie automatiquement ⚡ (10–20 secondes)
-5. Tu reçois une URL type → `https://amazing-curie-abc123.netlify.app`
-
-> 💡 **Note ta nouvelle URL** — tu en auras besoin à l'étape ④
+> 💡 **Personnalise l'URL** : Netlify → ton site → Site configuration → Change site name
 
 ---
 
-## ③ Créer ton application Strava (5 min)
+### ③ Créer ton application Strava (5 min)
 
-1. Va sur → **https://www.strava.com/settings/api**
-   *(connecte-toi à Strava si demandé)*
-
+1. Va sur **https://www.strava.com/settings/api**
 2. Clique **"Create & Manage Your App"**
-
 3. Remplis le formulaire :
-   | Champ | Valeur |
-   |-------|--------|
-   | **App Name** | TrailCoach Pro |
-   | **Category** | Coaching |
-   | **Club** | *(laisser vide)* |
-   | **Website** | `https://ton-url.netlify.app` |
-   | **Authorization Callback Domain** | `ton-url.netlify.app` ← **SANS https://** |
-   | **App Description** | Coaching trail running |
 
-4. Coche la case conditions → Clique **"Create"**
+| Champ | Valeur |
+|---|---|
+| App Name | TrailCoach Pro |
+| Category | Coaching |
+| Website | `https://ton-url.netlify.app` |
+| **Authorization Callback Domain** | `ton-url.netlify.app` ← sans https:// |
 
-5. Tu vois maintenant ta page API avec :
-   - **Client ID** : un nombre (ex: `123456`) → **NOTE-LE**
-   - **Client Secret** : une longue chaîne → **NOTE-LE** (clique 👁 pour voir)
+4. Clique **"Create"**
+5. Note ton **Client ID** (un nombre) et ton **Client Secret** (longue chaîne, clique 👁 pour voir)
 
 ---
 
-## ④ Ajouter les secrets Strava sur Netlify (3 min)
+### ④ Ajouter les variables d'environnement Netlify (3 min)
 
-> ⚠️ Le Client Secret ne doit JAMAIS être dans le code — il reste côté serveur Netlify.
+Netlify → ton site → **Site configuration** → **Environment variables** → **Add a variable**
 
-1. Va sur **https://app.netlify.com** → clique sur ton site
-2. Dans le menu : **"Site configuration"** → **"Environment variables"**
-3. Clique **"Add a variable"** → **"Add a single variable"**
-4. Ajoute cette première variable :
-   - **Key** : `STRAVA_CLIENT_ID`
-   - **Value** : ton Client ID (ex: `123456`)
-   - Clique **"Create variable"**
+| Clé | Valeur | Obligatoire |
+|---|---|---|
+| `STRAVA_CLIENT_ID` | ton Client ID Strava | ✅ |
+| `STRAVA_CLIENT_SECRET` | ton Client Secret Strava | ✅ |
+| `COACH_TOKEN` | copié depuis ⚙ Réglages de l'app (voir étape ⑥) | ✅ |
 
-5. Refais **"Add a variable"** pour la deuxième :
-   - **Key** : `STRAVA_CLIENT_SECRET`
-   - **Value** : ton Client Secret (la longue chaîne)
-   - Clique **"Create variable"**
-
-6. Va dans **"Deploys"** → clique **"Trigger deploy"** → **"Deploy site"**
-   *(Netlify redéploie avec les nouvelles variables — 20 secondes)*
+Après avoir ajouté les variables → **Deploys** → **Trigger deploy** → **Deploy site**
 
 ---
 
-## ⑤ Configurer l'app au premier lancement (30 sec)
+### ⑤ Premier lancement de l'app
 
-1. Ouvre ton URL Netlify dans le navigateur
-2. L'écran de setup apparaît
-3. Entre ton **Client ID** (juste le nombre, ex: `123456`)
-4. Clique **"Continuer →"**
-5. Tu arrives sur le dashboard TrailCoach Pro ✅
+1. Ouvre ton URL Netlify
+2. L'écran de setup apparaît → entre ton **Client ID Strava** → **Continuer**
+3. Tu arrives sur le dashboard TrailCoach Pro ✅
 
 ---
 
-## ⑥ Connecter un athlète à Strava
+### ⑥ Copier le COACH_TOKEN dans Netlify
 
-1. Dans l'app → onglet **"Athlète"**
-2. Sélectionne l'athlète à connecter
-3. Clique **"⚡ Connecter Strava"**
-4. Un lien d'autorisation apparaît → clique **"📋 Copier le lien"**
-5. Envoie ce lien à ton athlète par SMS/WhatsApp/email
-6. L'athlète clique → autorise TrailCoach sur Strava → est redirigé vers ton site
-7. La connexion s'établit automatiquement ✅
-8. Ses activités Strava se chargent en temps réel
+1. Dans l'app → clique sur ton nom (coin bas gauche) → **⚙ Réglages & Cloud**
+2. Copie le **Token Coach** (bouton 📋)
+3. Retourne sur Netlify → **Environment variables** → ajoute `COACH_TOKEN` avec cette valeur
+4. **Trigger deploy** pour que la variable soit prise en compte
 
 ---
 
-## 🔄 Synchronisation des activités
+### ⑦ Configurer le webhook Strava (sync auto)
 
-- Clique **"⚡ Sync Strava"** dans la topbar pour synchroniser tous les athlètes connectés
-- Les nouvelles activités apparaissent dans la vue Athlète → Activités Strava
-- Les stats se mettent à jour dans le Dashboard et l'Analyse
+> Le webhook permet que les activités des athlètes arrivent **automatiquement** dans l'app, sans rien faire.
+
+1. Dans l'app → **⚙ Réglages & Cloud**
+2. Section **Webhook Strava** → clique **⚡ Configurer le webhook Strava**
+3. Le badge passe à **✓ Actif** → c'est terminé ✅
 
 ---
 
-## 📁 Structure du dossier déployé
+### ⑧ Connecter un athlète à Strava
+
+1. Dans l'app → onglet **Athlète** → sélectionne un athlète
+2. Clique **⚡ Connecter Strava** → copie le lien d'autorisation
+3. Envoie ce lien à l'athlète (SMS / WhatsApp)
+4. L'athlète clique → autorise sur Strava → connexion automatique ✅
+
+OU l'athlète peut se connecter **lui-même** depuis **sa tablette** :
+1. Ouvre son lien `ton-url.netlify.app/athlete.html?id=X`
+2. Entre son PIN → clique **⚡ Connecter Strava** dans son profil
+3. Autorise → ses activités se synchronisent automatiquement ✅
+
+---
+
+### ⑨ Donner accès à un athlète
+
+1. Dans l'app → sélectionne l'athlète → **📤 Lien athlète**
+2. Copie le lien + le PIN → envoie à l'athlète
+3. L'athlète ouvre le lien sur sa tablette ou téléphone, entre son PIN
+4. Il voit son programme, peut valider ses séances et connecter Strava
+
+---
+
+## Mettre à jour l'app (quand il y a de nouvelles fonctionnalités)
+
+1. Récupère le nouveau fichier **`trailcoach-netlify.zip`**
+2. Netlify → ton site → **Deploys** → **"Deploy manually"** (ou glisse-dépose le zip)
+3. Le site se met à jour en 20 secondes ✅
+
+> Toutes tes données sont dans **Netlify Blobs** (base de données cloud) → elles ne sont **pas effacées** lors d'une mise à jour.
+
+---
+
+## Architecture
 
 ```
-trailcoach-netlify/
-├── index.html                     ← Application complète (HTML/CSS/JS)
-├── netlify.toml                   ← Config routes + fonctions
-└── netlify/
-    └── functions/
-        ├── strava-token.js        ← OAuth sécurisé (Client Secret protégé)
-        └── strava-activities.js   ← Proxy API Strava
+trailcoach-netlify.zip
+├── index.html                          ← Interface coach (toi)
+├── athlete.html                        ← Interface athlète (tablette)
+├── netlify.toml                        ← Configuration
+├── package.json
+└── netlify/functions/
+    ├── athlete-data.js                 ← Base de données athlètes (Netlify Blobs)
+    ├── strava-token.js                 ← OAuth Strava sécurisé
+    ├── strava-activities.js            ← Proxy API Strava
+    ├── strava-webhook.js               ← Réception events Strava (sync auto)
+    └── strava-webhook-setup.js         ← Configuration webhook (1 clic)
 ```
 
 ---
 
-## 🔐 Flux OAuth Strava (comment ça marche)
+## Variables d'environnement résumé
+
+| Variable | Rôle | Valeur |
+|---|---|---|
+| `COACH_TOKEN` | Protège l'écriture dans la base | Depuis ⚙ Réglages de l'app |
+| `STRAVA_CLIENT_ID` | Identifiant app Strava | strava.com/settings/api |
+| `STRAVA_CLIENT_SECRET` | Secret app Strava | strava.com/settings/api |
+
+---
+
+## Flux de synchronisation Strava
 
 ```
-Athlète clique le lien d'autorisation
-          ↓
-Strava demande : "Autoriser TrailCoach à lire tes activités ?"
-          ↓
-Athlète clique "Autoriser"
-          ↓
-Strava redirige vers ton-site.netlify.app?code=ABC&state=ATHLETE_ID
-          ↓
-La fonction Netlify /api/strava-token échange le code
-(Client Secret utilisé côté serveur — jamais exposé au client)
-          ↓
-Token d'accès retourné → stocké dans l'app
-          ↓
-/api/strava-activities récupère les vraies activités ✅
+Athlète finit une sortie → enregistre sur Strava / Garmin / Suunto
+              ↓
+Strava envoie un événement webhook à l'app
+              ↓
+La fonction récupère l'activité avec le token de l'athlète
+              ↓
+L'activité est stockée dans la base de données
+La séance planifiée du même jour est validée automatiquement
+              ↓
+Le coach voit la mise à jour → bouton ↙ Sync statuts
+L'athlète voit l'activité dans son programme ✅
 ```
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 **C'est gratuit ?**
-Oui. Plan gratuit Netlify : hébergement illimité + 125 000 appels/mois + HTTPS auto.
+Oui. Plan gratuit Netlify : hébergement + HTTPS + 125 000 appels fonctions/mois + Netlify Blobs 1 Go.
 
-**Puis-je changer l'URL ?**
-Oui. Netlify → ton site → "Site configuration" → "Change site name".
+**Mes données sont-elles perdues si je redéploie ?**
+Non. Les données des athlètes sont dans Netlify Blobs (base de données cloud), indépendante du code.
 
-**Mes données sont-elles sécurisées ?**
-Oui. Le Client Secret ne quitte jamais Netlify. Les tokens Strava sont stockés en localStorage (côté coach uniquement).
-
-**Comment mettre à jour l'app ?**
-Glisse-dépose à nouveau le dossier sur Netlify → redéploiement automatique.
+**Puis-je utiliser l'app sur téléphone ?**
+Oui. `athlete.html` est optimisé mobile. L'interface coach (`index.html`) est prévue pour tablette/desktop.
 
 **Un athlète peut-il voir les données des autres ?**
-Non. Chaque athlète a son propre token. L'app est une interface coach.
+Non. Chaque athlète accède uniquement à ses données avec son PIN.

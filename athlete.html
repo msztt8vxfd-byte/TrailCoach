@@ -415,7 +415,7 @@ function renderApp(data){
   // Semaine courante
   const weekSess=sessions.filter(x=>{const d=new Date(x.d);d.setHours(0,0,0,0);return d>=mon&&d<sun;});
   const done=weekSess.filter(x=>x.ok).length;
-  const kmPlanned=weekSess.reduce((acc,x)=>acc+(x.dist||x.km||0),0);
+  const kmPlanned=weekSess.reduce((acc,x)=>acc+(parseFloat(x.dist)||0),0);
   const minPlanned=weekSess.reduce((acc,x)=>acc+(x.dur||Math.round((x.sec||0)/60)||0),0);
   const dpPlanned=weekSess.reduce((acc,x)=>acc+(x.dp||0),0);
 
@@ -443,9 +443,9 @@ function renderApp(data){
         <div class="hero-name">${prenom} ${nom}</div>
         <div class="hero-sub">${disc||''} · ${niv||''}<br>${obj||''}</div>
         <div class="hero-kpis">
-          <div class="hkpi"><div class="hkpi-val">${kmPlanned>0?(kmPlanned/1000).toFixed(0):weekSess.reduce((a,x)=>a+(x.dist||0),0)+''}km</div><div class="hkpi-lbl">planifiés</div></div>
+          <div class="hkpi"><div class="hkpi-val">${kmPlanned.toFixed(0)}km</div><div class="hkpi-lbl">planifiés</div></div>
           <div class="hkpi"><div class="hkpi-val">${done}/${weekSess.length}</div><div class="hkpi-lbl">séances</div></div>
-          ${minPlanned?`<div class="hkpi"><div class="hkpi-val">${minPlanned>=60?Math.round(minPlanned/60)+'h':minPlanned+'min'}</div><div class="hkpi-lbl">durée</div></div>`:''}
+          ${minPlanned?`<div class="hkpi"><div class="hkpi-val">${minPlanned>=60?Math.floor(minPlanned/60)+'h'+(minPlanned%60?String(minPlanned%60).padStart(2,'0'):''):minPlanned+'min'}</div><div class="hkpi-lbl">durée</div></div>`:''}
           ${dpPlanned?`<div class="hkpi"><div class="hkpi-val">${dpPlanned>1000?(dpPlanned/1000).toFixed(1)+'k':dpPlanned}m</div><div class="hkpi-lbl">D+</div></div>`:''}
         </div>
         ${strava?.athleteId
@@ -478,7 +478,7 @@ function renderApp(data){
   html+=`<div class="week-bar"><div class="week-bar-inner">
     <div class="wstat"><div class="wstat-val">${done}/${weekSess.length}</div><div class="wstat-lbl">Séances</div></div>
     <div class="wstat"><div class="wstat-val">${done>0&&weekSess.length>0?Math.round(done/weekSess.length*100):0}%</div><div class="wstat-lbl">Complétion</div></div>
-    <div class="wstat"><div class="wstat-val">${kmPlanned>0?((kmPlanned/1000).toFixed(0)):weekSess.reduce((a,x)=>a+(x.dist||0),0)} km</div><div class="wstat-lbl">Volume</div></div>
+    <div class="wstat"><div class="wstat-val">${kmPlanned.toFixed(0)} km</div><div class="wstat-lbl">Volume</div></div>
     <div class="wstat"><div class="wstat-val">${dpPlanned?dpPlanned+'m':'—'}</div><div class="wstat-lbl">D+</div></div>
   </div></div>`;
 
@@ -510,7 +510,7 @@ function renderApp(data){
         const sl=sess.ok?'✓ Réalisé':isToday?'Aujourd\'hui':isPast?'Non réalisé':'Prévu';
         const mets=[
           sess.dur?sess.dur+' min':(sess.sec?fmtDur(sess.sec):null),
-          sess.dist?sess.dist+' km':(sess.km?fmtDist(sess.km):null),
+          sess.dist?sess.dist+' km':null,
           sess.dp?'+'+sess.dp+'m D+':null,
           sess.al?fmtPace(sess.al):null,
         ].filter(Boolean);
@@ -584,7 +584,7 @@ function renderApp(data){
 
 function renderMatchCard(act,sess){
   const actDist=act.km||act.distM||0;
-  const planDist=(sess.dist||(sess.km?sess.km/1000:0)||0)*1000;
+  const planDist=(parseFloat(sess.dist)||0)*1000;
   const actDur=act.sec||0;
   const planDur=(sess.dur?sess.dur*60:0)||(sess.sec||0);
   const mets=[

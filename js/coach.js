@@ -862,13 +862,23 @@ async function pullFromCloud(){
 
 // ── Athlete link ──────────────────────────────────────────────
 
-function openAthleteLink(){
+async function openAthleteLink(){
   const a=S.athletes[S.currentAthlete]; if(!a) return;
+
+  // Generate PIN if athlete has none (demo athletes, legacy records)
+  if(!a.pin){
+    a.pin=String(Math.floor(1000+Math.random()*9000));
+    save();
+  }
+
+  // Sync athlete data to cloud so the link actually works
+  if(S.coachToken) await syncAthleteToCloud(a.id);
+
   const url=SITE_URL+'/athlete.html?id='+a.id;
   document.getElementById('share-ath-name').textContent=`${a.prenom} ${a.nom}`;
   const el=document.getElementById('share-link-url');
   el.textContent=url; el.setAttribute('data-url',url);
-  document.getElementById('share-ath-pin').textContent=a.pin||'—';
+  document.getElementById('share-ath-pin').textContent=a.pin;
   openModal('shareLink');
 }
 

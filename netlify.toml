@@ -17,6 +17,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/strava-webhook-setup"
+  to = "/.netlify/functions/strava-webhook-setup"
+  status = 200
+
+[[redirects]]
   from = "/api/strava-token"
   to = "/.netlify/functions/strava-token"
   status = 200

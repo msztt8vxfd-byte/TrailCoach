@@ -709,6 +709,17 @@ body.athlete-mode #ath-selector{display:none!important}
         4. Redéploie le site
       </div>
     </div>
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+      <div class="fl" style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        ⚡ Webhook Strava
+        <span id="webhook-badge" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface2);color:var(--text3)">—</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">
+        Quand un athlète enregistre une sortie sur Strava, elle s'intègre automatiquement dans son programme et valide la séance du jour. Aucune manipulation manuelle.
+      </div>
+      <button class="btn btn-strava btn-sm" id="webhook-btn" onclick="setupWebhook()" style="width:100%;justify-content:center">⚡ Configurer le webhook Strava</button>
+      <div id="webhook-msg" style="font-size:11px;margin-top:8px;min-height:16px"></div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost btn-sm" onclick="generateCoachToken()">🔄 Nouveau token</button>
       <button class="btn btn-ghost" onclick="closeModal('settings')">Fermer</button>
@@ -1447,6 +1458,7 @@ function openModal(id) {
   if(id==='settings'){
     const el=document.getElementById('coach-token-display');
     if(el) el.textContent=S.coachToken||'—';
+    checkWebhookStatus();
   }
   document.getElementById('modal-'+id).classList.add('open');
 }
@@ -1541,6 +1553,63 @@ function showToast(msg,type='ok'){
 // ══════════════════════════════════════════════════════════════
 //  COACH TOKEN & SETTINGS
 // ══════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════
+//  WEBHOOK STRAVA — CONFIGURATION AUTOMATIQUE
+// ══════════════════════════════════════════════════════════════
+
+async function checkWebhookStatus(){
+  const badge=document.getElementById('webhook-badge');
+  const msg=document.getElementById('webhook-msg');
+  const btn=document.getElementById('webhook-btn');
+  if(!badge)return;
+  if(!S.coachToken){badge.style.background='var(--surface2)';badge.style.color='var(--text3)';badge.textContent='—';return;}
+  badge.textContent='…';
+  try{
+    const res=await fetch('/api/strava-webhook-setup',{headers:{'X-Coach-Token':S.coachToken}});
+    if(!res.ok){badge.textContent='—';return;}
+    const d=await res.json();
+    const subs=d.subscriptions||[];
+    if(subs.length>0){
+      badge.style.background='var(--green-dim)';badge.style.color='var(--green)';badge.textContent='✓ Actif';
+      if(msg)msg.innerHTML=`<span style="color:var(--green)">Webhook actif — ID ${subs[0].id} · ${subs[0].callback_url}</span>`;
+      if(btn)btn.textContent='⚡ Reconfigurer le webhook';
+    }else{
+      badge.style.background='var(--orange-dim)';badge.style.color='var(--orange)';badge.textContent='Non configuré';
+      if(msg)msg.innerHTML='<span style="color:var(--text3)">Clique sur le bouton pour activer la synchronisation automatique.</span>';
+    }
+  }catch{badge.textContent='—';}
+}
+
+async function setupWebhook(){
+  if(!S.coachToken){showToast('Configure d\'abord le COACH_TOKEN dans Netlify','err');return;}
+  if(!S.stravaClientId){showToast('Configure d\'abord ton Client ID Strava dans Setup','err');return;}
+  const btn=document.getElementById('webhook-btn');
+  const badge=document.getElementById('webhook-badge');
+  const msg=document.getElementById('webhook-msg');
+  btn.disabled=true;btn.textContent='⟳ Configuration en cours…';
+  if(msg)msg.textContent='';
+  try{
+    const res=await fetch('/api/strava-webhook-setup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Coach-Token':S.coachToken},
+      body:JSON.stringify({siteUrl:window.location.origin}),
+    });
+    const d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Erreur '+res.status);
+    badge.style.background='var(--green-dim)';badge.style.color='var(--green)';
+    badge.textContent='✓ Actif';
+    const subId=d.subscription?.id;
+    if(msg)msg.innerHTML=`<span style="color:var(--green)">✓ ${d.already?'Déjà configuré':'Webhook activé'} — ID ${subId}. Les activités Strava des athlètes se synchronisent maintenant automatiquement.</span>`;
+    showToast('Webhook Strava activé ✓','ok');
+  }catch(e){
+    badge.style.background='var(--red-dim)';badge.style.color='var(--red)';badge.textContent='Erreur';
+    if(msg)msg.innerHTML=`<span style="color:var(--red)">✗ ${e.message}</span>`;
+    showToast('Erreur: '+e.message,'err');
+  }finally{
+    btn.disabled=false;btn.textContent='⚡ Reconfigurer le webhook';
+  }
+}
 
 function generateCoachToken(){
   S.coachToken=Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b=>b.toString(16).padStart(2,'0')).join('');

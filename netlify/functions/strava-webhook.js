@@ -14,7 +14,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'GET') {
     const p = event.queryStringParameters || {};
     if (p['hub.mode'] !== 'subscribe') return resp(400, { error: 'hub.mode manquant' });
-    const VERIFY_TOKEN = process.env.STRAVA_VERIFY_TOKEN;
+    const VERIFY_TOKEN = process.env.COACH_TOKEN;
     if (!VERIFY_TOKEN || p['hub.verify_token'] !== VERIFY_TOKEN) {
       return resp(403, { error: 'hub.verify_token invalide' });
     }

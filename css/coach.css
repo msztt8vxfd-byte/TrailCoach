@@ -1,0 +1,281 @@
+/* coach.css — coach dashboard styles (index.html) */
+
+html, body { height:100%; overflow:hidden }
+
+/* Override toast to bottom-right fixed for desktop */
+.toast { bottom:20px; left:auto; right:20px; transform:translateY(10px); opacity:0; transition:all .3s; max-width:300px }
+.toast.show { transform:translateY(0); opacity:1 }
+.toast.info { border-color:var(--blue); color:var(--blue) }
+
+/* Override type-pills to match coach color scheme */
+.tp-ef { background:var(--blue-dim); color:var(--blue) }
+.tp-trail { background:var(--green-dim); color:var(--green) }
+.tp-tempo { background:var(--amber-dim); color:var(--amber) }
+
+/* ── Layout ── */
+.shell { display:flex; height:100vh; flex-direction:column }
+.topbar { height:52px; min-height:52px; display:flex; align-items:center; background:var(--bg1); border-bottom:1px solid var(--border); position:relative; z-index:30; flex-shrink:0 }
+.logo-wrap { width:220px; min-width:220px; display:flex; align-items:center; gap:10px; padding:0 20px; border-right:1px solid var(--border); height:100% }
+.logo { font-family:var(--font-d); font-size:19px; font-weight:800; letter-spacing:-.5px; color:var(--text); font-style:italic }
+.logo em { color:var(--accent); font-style:normal }
+.logo-badge { font-size:9px; font-weight:700; background:var(--accent); color:#000; padding:1px 5px; border-radius:3px; font-family:var(--font-m); letter-spacing:1px }
+.topbar-center { flex:1; display:flex; align-items:center; padding:0 16px; gap:4px }
+.top-tab { padding:5px 14px; border-radius:6px; font-size:12px; font-weight:600; letter-spacing:.3px; cursor:pointer; color:var(--text3); transition:all .15s; border:1px solid transparent }
+.top-tab:hover { color:var(--text2); background:var(--surface) }
+.top-tab.active { color:var(--accent); background:var(--accent-dim); border-color:rgba(232,255,71,.2) }
+.topbar-right { display:flex; align-items:center; gap:8px; padding-right:16px; margin-left:auto }
+.race-chip { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); font-size:11px; font-family:var(--font-m); color:var(--text2) }
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; box-shadow:0 0 6px var(--green); animation:blink 2s ease-in-out infinite }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.body { display:flex; flex:1; overflow:hidden }
+.sidebar { width:220px; min-width:220px; background:var(--bg1); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto }
+.sidebar-section { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3); padding:16px 14px 4px }
+.nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px 7px 14px; margin:1px 6px; border-radius:7px; cursor:pointer; color:var(--text2); font-size:12px; font-weight:500; transition:all .15s; border:1px solid transparent; position:relative }
+.nav-item:hover { background:var(--surface); color:var(--text) }
+.nav-item.active { background:var(--accent-dim); color:var(--accent); border-color:rgba(232,255,71,.15) }
+.nav-item.active::before { content:''; position:absolute; left:-6px; top:50%; transform:translateY(-50%); width:2px; height:14px; background:var(--accent); border-radius:1px }
+.nav-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0 }
+.sidebar-footer { margin-top:auto; padding:10px 8px; border-top:1px solid var(--border) }
+.coach-pill { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; background:var(--surface) }
+.coach-av { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:var(--font-d); font-size:11px; font-weight:800; color:#000; flex-shrink:0 }
+
+.content { flex:1; overflow-y:auto; padding:20px 22px 40px }
+.view { display:none; animation:fadeUp .2s ease }
+.view.active { display:block }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Page header ── */
+.page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border) }
+.page-title { font-family:var(--font-d); font-size:28px; font-weight:800; font-style:italic; letter-spacing:-1px }
+.page-sub { font-size:12px; color:var(--text3); margin-top:3px }
+.page-actions { display:flex; gap:8px; align-items:center }
+
+/* ── KPIs ── */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px }
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; position:relative; overflow:hidden }
+.kpi::before { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--kpi-color,var(--accent)) }
+.kpi-label { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
+.kpi-val { font-family:var(--font-d); font-size:30px; font-weight:800; font-style:italic; letter-spacing:-1px; color:var(--text); line-height:1 }
+.kpi-sub { font-size:11px; color:var(--text3); margin-top:5px }
+
+/* ── Athletes grid ── */
+.athletes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px }
+.ath-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; cursor:pointer; transition:all .15s; position:relative; overflow:hidden }
+.ath-card::after { content:''; position:absolute; top:0; right:0; left:0; height:1px; background:linear-gradient(90deg,transparent,var(--ath-color,var(--accent)),transparent) }
+.ath-card:hover { border-color:var(--border2); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.4) }
+.av-sm { width:32px; height:32px; font-size:12px }
+.av-md { width:40px; height:40px; font-size:14px }
+.av-lg { width:52px; height:52px; font-size:18px }
+.ath-card-top { display:flex; align-items:center; gap:10px; margin-bottom:12px }
+.ath-name { font-size:13px; font-weight:700 }
+.ath-meta { font-size:10px; color:var(--text3); margin-top:1px }
+.status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-left:auto }
+.status-dot.ok { background:var(--green); box-shadow:0 0 6px var(--green) }
+.status-dot.warn { background:var(--amber) }
+.status-dot.rest { background:var(--text3) }
+.strava-tag { font-size:9px; font-weight:700; background:var(--strava-dim); color:var(--strava); padding:1px 5px; border-radius:3px; font-family:var(--font-m); margin-top:2px; display:inline-block }
+.ath-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:6px }
+.ath-metric { text-align:center }
+.ath-metric-val { font-family:var(--font-m); font-size:13px; font-weight:700 }
+.ath-metric-lbl { font-size:9px; color:var(--text3); margin-top:1px; text-transform:uppercase; letter-spacing:.5px }
+.ath-prog { margin-top:10px; padding-top:10px; border-top:1px solid var(--border) }
+.prog-row { display:flex; justify-content:space-between; font-size:10px; color:var(--text3); margin-bottom:4px }
+.prog-track { height:3px; background:var(--bg3); border-radius:3px; overflow:hidden }
+.prog-fill { height:100%; border-radius:3px; transition:width .5s ease }
+
+/* ── Sessions ── */
+.session-item { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .1s }
+.session-item:last-child { border-bottom:none }
+.session-item:hover { background:var(--bg3) }
+.sess-date-col { text-align:center; width:38px; flex-shrink:0 }
+.sess-day { font-family:var(--font-d); font-size:22px; font-weight:800; font-style:italic; color:var(--accent); line-height:1 }
+.sess-mon { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:1px }
+.sess-divider { width:1px; height:30px; background:var(--border) }
+.sess-info { flex:1; min-width:0 }
+.sess-title { font-size:13px; font-weight:600 }
+.sess-detail { font-size:11px; color:var(--text3); margin-top:1px }
+
+/* ── Planning ── */
+.week-strip { display:grid; grid-template-columns:120px repeat(7,1fr); background:var(--border); border-radius:10px; overflow:hidden; gap:1px; margin-bottom:12px }
+.ws-header { background:var(--bg3); padding:8px 6px; text-align:center }
+.ws-day-name { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.ws-day-num { font-family:var(--font-d); font-size:18px; font-weight:800; font-style:italic; margin-top:2px; color:var(--text) }
+.ws-day-num.today { color:var(--accent) }
+.ws-ath-header { background:var(--bg2); padding:8px 12px; display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600 }
+.ws-cell { background:var(--bg2); padding:4px; min-height:68px; cursor:pointer; transition:background .1s; position:relative }
+.ws-cell:hover { background:var(--surface) }
+.ws-pill { padding:3px 6px; border-radius:4px; font-size:10px; font-weight:500; line-height:1.3; border-left:2px solid; margin-bottom:3px }
+.wp-ef { background:var(--blue-dim); color:#60a5fa; border-color:var(--blue) }
+.wp-frac { background:var(--orange-dim); color:var(--orange); border-color:var(--orange) }
+.wp-trail { background:var(--green-dim); color:#4ade80; border-color:var(--green) }
+.wp-tempo { background:var(--amber-dim); color:var(--amber); border-color:var(--amber) }
+.wp-recup { background:var(--surface2); color:var(--text3); border-color:var(--text3) }
+.wp-done { opacity:.45 }
+.ws-add { display:none; align-items:center; justify-content:center; height:24px; font-size:16px; color:var(--text3) }
+.ws-cell:hover .ws-add { display:flex }
+
+/* ── Cards ── */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:12px }
+.card-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border) }
+.card-title { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.card-body { padding:16px }
+
+/* ── Programme table ── */
+.prog-table { width:100%; border-collapse:collapse }
+.prog-table th { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); padding:8px 12px; text-align:left; border-bottom:1px solid var(--border) }
+.prog-table td { padding:8px 12px; border-bottom:1px solid var(--border); font-size:12px }
+.prog-table tr:last-child td { border-bottom:none }
+.prog-table tr.current-week { background:rgba(232,255,71,.04) }
+.prog-table tr.done-week { opacity:.55 }
+.sem-tag { font-family:var(--font-m); font-size:11px; font-weight:700 }
+.phase-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 7px; border-radius:4px; font-size:9px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; font-family:var(--font-m) }
+.ph-charge { background:var(--blue-dim); color:var(--blue) }
+.ph-recup { background:var(--green-dim); color:var(--green) }
+.ph-pic { background:var(--amber-dim); color:var(--amber) }
+.ph-affutage { background:var(--surface2); color:var(--text3) }
+.ph-contrainte { background:rgba(255,163,26,.12); color:var(--amber); border:1px dashed rgba(255,163,26,.3) }
+.current-tag { background:var(--accent-dim); color:var(--accent); font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; font-family:var(--font-m); animation:blink 2s infinite }
+
+/* ── Analyse ── */
+.compare-section { margin-bottom:12px }
+.compare-label { font-size:11px; color:var(--text2); margin-bottom:5px }
+.cbar-row { display:flex; align-items:center; gap:8px; margin-bottom:3px }
+.cbar-name { font-size:9px; color:var(--text3); width:45px; text-align:right }
+.cbar-track { flex:1; height:5px; background:var(--bg3); border-radius:3px; overflow:hidden }
+.cbar-fill { height:100%; border-radius:3px }
+.cf-plan { background:var(--border2) }
+.cf-real { background:var(--orange) }
+.cbar-val { font-family:var(--font-m); font-size:11px; color:var(--text2); width:52px }
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:120px; padding:0 4px }
+.bar-group { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px }
+.bar-pair { display:flex; gap:3px; align-items:flex-end; flex:1; width:100% }
+.bar { flex:1; border-radius:3px 3px 0 0; transition:height .5s cubic-bezier(.34,1.56,.64,1) }
+.bar-lbl { font-size:9px; color:var(--text3); font-family:var(--font-m) }
+.zone-bar-wrap { display:flex; height:8px; gap:2px; border-radius:4px; overflow:hidden; margin:6px 0 }
+.zbar { transition:flex .5s ease }
+.z1c{background:#2ecc8a} .z2c{background:#60d394} .z3c{background:#ffa31a} .z4c{background:#ff6b35} .z5c{background:#ff4757}
+
+/* ── Athlete hero (coach view) ── */
+.ath-hero { background:linear-gradient(135deg,var(--surface) 0%,var(--bg3) 100%); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:16px; display:flex; align-items:center; gap:16px; position:relative; overflow:hidden }
+.ath-hero::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:var(--hero-color,var(--accent-dim)); filter:blur(30px) }
+.ath-hero-name { font-family:var(--font-d); font-size:28px; font-weight:800; font-style:italic; letter-spacing:-1px }
+.ath-hero-meta { font-size:12px; color:var(--text3); margin-top:3px }
+.ath-hero-kpis { display:flex; gap:24px; margin-left:auto }
+.hero-kpi { text-align:center }
+.hero-kpi-val { font-family:var(--font-d); font-size:26px; font-weight:800; font-style:italic; color:var(--accent) }
+.hero-kpi-lbl { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:1px }
+
+/* ── Week programme table ── */
+.week-prog-table { width:100%; border-collapse:collapse }
+.week-prog-table th { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); padding:8px 14px; text-align:left; border-bottom:1px solid var(--border) }
+.week-prog-table td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:middle; font-size:12px }
+.week-prog-table tr:last-child td { border-bottom:none }
+.week-prog-table tr.today-row { background:rgba(232,255,71,.03); border-left:2px solid var(--accent) }
+.day-lbl { font-size:12px; font-weight:600 }
+.day-date { font-size:10px; color:var(--text3) }
+.sess-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:5px; font-size:11px; font-weight:600; cursor:pointer; transition:filter .15s }
+.sess-pill:hover { filter:brightness(1.2) }
+.sp-plan { background:var(--blue-dim); color:var(--blue); border:none }
+
+/* ── Strava feed ── */
+.strava-act { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .1s }
+.strava-act:last-child { border-bottom:none }
+.strava-act:hover { background:var(--bg3) }
+.act-title { font-size:13px; font-weight:600; margin-bottom:2px }
+.act-date { font-size:10px; color:var(--text3); margin-bottom:6px }
+.act-metrics { display:flex; gap:14px; flex-wrap:wrap }
+.act-metric { font-size:11px; color:var(--text2) }
+.act-metric span { font-family:var(--font-m); font-size:12px; font-weight:600; color:var(--text) }
+
+/* ── Strava connect box ── */
+.strava-connect-box { background:var(--strava-dim); border:1px solid rgba(252,76,2,.25); border-radius:10px; padding:16px; margin-bottom:14px }
+.strava-connect-url { font-family:var(--font-m); font-size:11px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:8px 10px; color:#fc8060; word-break:break-all; margin:8px 0; line-height:1.4 }
+
+/* ── Alerts ── */
+.alert { padding:10px 14px; border-radius:7px; font-size:12px; line-height:1.6; margin-bottom:8px; border-left:3px solid }
+.alert-ok { background:var(--green-dim); border-color:var(--green); color:#86efac }
+.alert-warn { background:var(--amber-dim); border-color:var(--amber); color:#fcd34d }
+.alert-info { background:var(--blue-dim); border-color:var(--blue); color:#93c5fd }
+.alert-crit { background:var(--red-dim); border-color:var(--red); color:#fca5a5 }
+
+/* ── Grids ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px }
+.grid-6-4 { display:grid; grid-template-columns:6fr 4fr; gap:12px }
+
+/* ── Modal ── */
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); z-index:100; display:none; align-items:center; justify-content:center }
+.overlay.open { display:flex }
+.modal { background:var(--bg2); border:1px solid var(--border2); border-radius:14px; padding:24px; width:500px; max-width:96vw; max-height:90vh; overflow-y:auto; animation:modalIn .2s cubic-bezier(.34,1.56,.64,1) }
+@keyframes modalIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px }
+.modal-title { font-family:var(--font-d); font-size:20px; font-weight:800; font-style:italic }
+.modal-close { cursor:pointer; color:var(--text3); font-size:18px; padding:4px; transition:color .15s }
+.modal-close:hover { color:var(--text) }
+.fg { margin-bottom:14px }
+.fl { display:block; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px }
+.fi,.fs,.ft { width:100%; padding:9px 11px; background:var(--surface); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:var(--font-b); font-size:13px; outline:none; transition:border-color .15s }
+.fi:focus,.fs:focus,.ft:focus { border-color:var(--accent) }
+.ft { resize:vertical; min-height:72px }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:18px }
+.color-picker { display:flex; gap:8px }
+.color-swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; transition:transform .15s; border:2px solid transparent }
+.color-swatch:hover { transform:scale(1.15) }
+.color-swatch.selected { border-color:#fff }
+
+/* ── Setup ── */
+.setup-overlay { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; align-items:center; justify-content:center }
+.setup-box { background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:40px; width:460px; max-width:95vw }
+.setup-logo { font-family:var(--font-d); font-size:36px; font-weight:800; font-style:italic; letter-spacing:-1px; text-align:center; margin-bottom:4px }
+.setup-logo em { color:var(--accent); font-style:normal }
+.setup-sub { font-size:11px; color:var(--text3); letter-spacing:2px; text-transform:uppercase; text-align:center; margin-bottom:28px }
+.setup-step { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:12px }
+.setup-step-num { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); font-family:var(--font-m); margin-bottom:6px }
+.setup-step-title { font-size:14px; font-weight:700; margin-bottom:6px }
+.setup-step-body { font-size:12px; color:var(--text3); line-height:1.6 }
+.setup-step-body a { color:var(--accent); text-decoration:none }
+.setup-step-body a:hover { text-decoration:underline }
+
+/* ── Sync bar ── */
+.sync-bar { display:flex; align-items:center; gap:8px; padding:8px 14px; background:var(--strava-dim); border:1px solid rgba(252,76,2,.2); border-radius:7px; font-size:12px; margin-bottom:10px }
+
+/* ── Notes ── */
+.note-item { background:var(--bg3); border:1px solid var(--border); border-radius:7px; padding:10px 12px; margin-bottom:8px }
+.note-meta { font-size:10px; color:var(--text3); margin-bottom:5px }
+.note-body { font-size:12px; line-height:1.5 }
+
+/* ── Week nav ── */
+.week-nav { display:flex; align-items:center; gap:8px }
+.arrow-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text2); font-size:14px; transition:all .15s }
+.arrow-btn:hover { background:var(--surface2); color:var(--text) }
+.week-lbl { font-family:var(--font-d); font-size:16px; font-weight:800; font-style:italic }
+
+/* ── Empty state ── */
+.empty-state { text-align:center; padding:40px 20px; color:var(--text3); font-size:13px }
+.empty-icon { font-size:36px; margin-bottom:10px }
+
+/* ── Tab inner ── */
+.tab-inner { display:flex; gap:4px }
+.tab-inner-btn { padding:4px 10px; border-radius:5px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text3); transition:all .15s }
+.tab-inner-btn.active { background:var(--accent-dim); color:var(--accent); border-color:rgba(232,255,71,.2) }
+
+/* ── Athlete mode ── */
+body.athlete-mode .sidebar { display:none !important }
+body.athlete-mode .topbar-center { display:none !important }
+body.athlete-mode .topbar-right { display:none !important }
+#ath-mode-bar { display:none; align-items:center; gap:12px; padding:0 16px }
+body.athlete-mode #ath-mode-bar { display:flex !important }
+body.athlete-mode #ath-selector { display:none !important }
+
+/* ── Hero actions ── */
+.hero-actions { display:flex; flex-direction:column; gap:6px; align-items:flex-end }
+.btn-danger { background:var(--red-dim) !important; color:var(--red) !important; border-color:rgba(255,71,87,.3) !important }
+.btn-danger:hover { background:rgba(255,71,87,.2) !important }
+
+/* ── Strava status panel ── */
+.strava-status-panel { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+.sc-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600 }
+.sc-on { background:rgba(252,76,2,.12); color:var(--strava); border:1px solid rgba(252,76,2,.3) }
+.sc-off { background:var(--surface2); color:var(--text3); border:1px solid var(--border) }
+.sc-meta { font-size:10px; color:var(--text3); flex:1; line-height:1.6 }

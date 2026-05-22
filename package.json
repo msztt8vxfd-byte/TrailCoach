@@ -1,0 +1,16 @@
+{
+  "name": "trailcoach",
+  "version": "1.0.0",
+  "description": "Trail running coaching app with Strava integration",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "zip": "zip -r trailcoach-netlify.zip trailcoach-netlify/"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0"
+  },
+  "devDependencies": {}
+}

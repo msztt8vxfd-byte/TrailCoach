@@ -1585,7 +1585,7 @@ async function syncAthleteToCloud(athId){
     const res=await fetch('/api/athlete-data',{
       method:'POST',
       headers:{'Content-Type':'application/json','X-Coach-Token':S.coachToken},
-      body:JSON.stringify({id:a.id,pin:a.pin||'0000',prenom:a.prenom,nom:a.nom,color:a.color,niv:a.niv,obj:a.obj,disc:a.disc,sessions,activities})
+      body:JSON.stringify({id:a.id,pin:a.pin||'0000',prenom:a.prenom,nom:a.nom,color:a.color,niv:a.niv,obj:a.obj,disc:a.disc,sessions,activities,stravaClientId:S.stravaClientId||''})
     });
     if(!res.ok){const e=await res.json();showToast('Cloud: '+e.error,'err');}
   } catch(e){ /* silencieux si pas encore déployé */ }

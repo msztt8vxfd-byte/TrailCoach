@@ -25,7 +25,12 @@ function showTab(tab) {
 
 async function fetchData(pin) {
   const res = await fetch(`/api/athlete-data?id=${ATH_ID}&pin=${encodeURIComponent(pin)}`);
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Erreur ' + res.status); }
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    const err = new Error(e.error || 'Erreur ' + res.status);
+    err.status = res.status;
+    throw err;
+  }
   return res.json();
 }
 
@@ -70,7 +75,12 @@ async function submitPin() {
     renderApp(data);
   } catch(e) {
     btn.disabled=false; btn.textContent='Accéder →';
-    errEl.textContent = e.message==='PIN incorrect' ? 'PIN incorrect. Vérifie auprès de ton coach.' : 'Erreur : '+e.message;
+    let msg;
+    if (e.message === 'PIN incorrect') msg = 'PIN incorrect. Vérifie auprès de ton coach.';
+    else if (e.message === 'Athlète introuvable') msg = 'Compte introuvable — demande un nouveau lien à ton coach.';
+    else if (e.status === 503) msg = 'Service indisponible — contacte ton coach.';
+    else msg = 'Erreur de connexion — réessaie.';
+    errEl.textContent = msg;
     inp.classList.add('err'); setTimeout(()=>inp.classList.remove('err'),500);
     inp.value=''; inp.focus();
   }

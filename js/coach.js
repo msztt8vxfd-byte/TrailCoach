@@ -360,6 +360,14 @@ renders.dashboard = function() {
     const km=aActs.reduce((acc,x)=>acc+(x.distM/1000),0);
     const done=aSess.filter(s=>s.done).length;
     const c=aSess.length?Math.round(done/aSess.length*100):0;
+
+    // Previous week comparison
+    const prevMon=getMon(-1), prevSun=new Date(prevMon); prevSun.setDate(prevMon.getDate()+7);
+    const prevSess=S.sessions.filter(s=>s.athId===a.id&&new Date(s.date)>=prevMon&&new Date(s.date)<prevSun);
+    const prevDone=prevSess.filter(s=>s.done).length;
+    const prevC=prevSess.length?Math.round(prevDone/prevSess.length*100):0;
+    const delta=c-prevC, trendArrow=delta>2?'↑':delta<-2?'↓':'→', trendColor=delta>2?'var(--green)':delta<-2?'var(--red)':'var(--text3)';
+
     const avgA=aActs.length?aActs.reduce((acc,x)=>acc+(x.allur||0),0)/aActs.length:null;
     const target=aSess.reduce((acc,s)=>acc+(s.dist||0),0);
     const pct=target?Math.min(Math.round(km/target*100),100):0;
@@ -373,7 +381,7 @@ renders.dashboard = function() {
       <div class="ath-metrics">
         <div class="ath-metric"><div class="ath-metric-val">${km.toFixed(1)}km</div><div class="ath-metric-lbl">Cette sem.</div></div>
         <div class="ath-metric"><div class="ath-metric-val">${fmtAllur(avgA)}</div><div class="ath-metric-lbl">Allure</div></div>
-        <div class="ath-metric"><div class="ath-metric-val">${c}%</div><div class="ath-metric-lbl">Complétion</div></div>
+        <div class="ath-metric"><div class="ath-metric-row"><span class="ath-metric-val">${c}%</span><span style="font-size:11px;font-weight:700;color:${trendColor}">${trendArrow}</span></div><div class="ath-metric-lbl">Complétion</div></div>
       </div>
       <div class="ath-prog">
         <div class="prog-row"><span>Volume hebdo</span><span>${km.toFixed(1)} / ${target}km</span></div>

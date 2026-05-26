@@ -390,6 +390,28 @@ renders.dashboard = function() {
     </div>`;
   }).join('');
 
+  // Weekly stars (100% completion)
+  const stars = S.athletes.filter(a => {
+    const aSess = getAthleteSessions(a.id);
+    if (aSess.length === 0) return false;
+    const done = aSess.filter(s => s.done).length;
+    return done === aSess.length;
+  }).slice(0,6);
+
+  document.getElementById('weekly-stars').innerHTML = stars.length
+    ? stars.map(a => {
+        const aSess = getAthleteSessions(a.id);
+        const aActs = S.activities.filter(x => x.athId === a.id && new Date(x.date) >= mon && new Date(x.date) < sun);
+        const km = aActs.reduce((acc, x) => acc + (x.distM/1000), 0);
+        return `<div class="star-card" style="--star-color:${a.color}">
+          <div class="star-avatar" style="background:${a.color};color:white">${initials(a)}</div>
+          <div class="star-name">${a.prenom}</div>
+          <div style="font-size:10px;color:var(--text3)">${aSess.length} séances · ${km.toFixed(0)}km</div>
+          <div class="star-badge">100% ✓</div>
+        </div>`;
+      }).join('')
+    : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Aucun athlète avec 100% de complétion cette semaine · Encouragez-les ! 💪</div>';
+
   const upcoming = S.sessions.filter(s=>!s.done&&new Date(s.date)>=now).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,5);
   document.getElementById('upcoming-sessions').innerHTML = upcoming.length
     ? upcoming.map(s=>{

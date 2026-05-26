@@ -52,6 +52,13 @@ html, body { height:100%; overflow:hidden }
 .page-sub { font-size:13px; color:var(--text3); margin-top:4px }
 .page-actions { display:flex; gap:10px; align-items:center }
 
+/* ── Weekly Stars ── */
+.star-card { background:linear-gradient(135deg,var(--star-color,var(--accent)) .1%,transparent 150%); border:1px solid var(--border); border-radius:12px; padding:14px 12px; text-align:center; position:relative; overflow:hidden }
+.star-card::before { content:'✨'; position:absolute; top:-8px; right:-8px; font-size:32px; opacity:.2 }
+.star-avatar { width:48px; height:48px; border-radius:50%; margin:0 auto 8px; font-size:20px; display:flex; align-items:center; justify-content:center; border:2px solid var(--border) }
+.star-name { font-family:var(--font-m); font-size:12px; font-weight:700; margin-bottom:2px }
+.star-badge { display:inline-block; background:var(--accent); color:var(--bg); font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-top:4px }
+
 /* ── KPIs ── */
 .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px }
 .kpi { background:linear-gradient(135deg,var(--surface) 0%,var(--bg3) 100%); border:1px solid var(--border); border-radius:12px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:all .2s }

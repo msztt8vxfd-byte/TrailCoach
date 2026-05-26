@@ -215,6 +215,16 @@ function renderMatchCard(act, sess) {
 
 // ── Build section HTML ────────────────────────────────────────
 
+function getMotivation(pct, total, done) {
+  if (total === 0) return {icon:'🌱', title:'Nouvelle semaine', msg:'Aucune séance planifiée pour le moment. Reste à l\'écoute de ton coach.', color:'var(--text2)'};
+  if (pct === 100) return {icon:'🏆', title:'Semaine parfaite !', msg:'Tu as terminé toutes tes séances. Bravo, continue sur cette lancée !', color:'var(--green)'};
+  if (pct >= 75) return {icon:'🔥', title:'Excellent rythme !', msg:`${done}/${total} séances réalisées. Tu es sur la bonne voie, garde le cap !`, color:'var(--accent)'};
+  if (pct >= 50) return {icon:'💪', title:'Belle progression', msg:`${done}/${total} séances réalisées. Continue, tu peux encore terminer fort cette semaine !`, color:'var(--blue)'};
+  if (pct >= 25) return {icon:'🎯', title:'Reste concentré', msg:`${done}/${total} séances réalisées. Encore quelques efforts pour atteindre tes objectifs.`, color:'var(--amber)'};
+  if (done > 0) return {icon:'🚀', title:'C\'est parti !', msg:`${done}/${total} séances réalisées. Chaque pas compte, continue sur ta lancée.`, color:'var(--orange)'};
+  return {icon:'⚡', title:'Prêt à commencer ?', msg:`${total} séances t'attendent cette semaine. Ton coach a préparé un programme pour toi.`, color:'var(--accent)'};
+}
+
 function buildProfilHtml(data, kmPlanned, done, weekSess, minPlanned, dpPlanned) {
   const {prenom, nom, color, niv, obj, disc, strava, stravaClientId} = data;
   return `<div class="hero">
@@ -292,6 +302,19 @@ function buildProgrammeHtml(data, today, mon) {
     <div class="wstat"><div class="wstat-val">${done>0&&weekSess.length>0?Math.round(done/weekSess.length*100):0}%</div><div class="wstat-lbl">Complétion</div></div>
     <div class="wstat"><div class="wstat-val">${kmPlanned.toFixed(0)} km</div><div class="wstat-lbl">Volume</div></div>
     <div class="wstat"><div class="wstat-val">${dpPlanned?dpPlanned+'m':'—'}</div><div class="wstat-lbl">D+</div></div>
+  </div></div>`;
+
+  // Motivation card
+  const compPct = weekSess.length ? Math.round(done/weekSess.length*100) : 0;
+  const motiv = getMotivation(compPct, weekSess.length, done);
+  html += `<div class="motiv"><div class="motiv-card" style="--motiv-color:${motiv.color}">
+    <div class="motiv-icon">${motiv.icon}</div>
+    <div class="motiv-title">${motiv.title}</div>
+    <div class="motiv-msg">${motiv.msg}</div>
+    <div class="motiv-progress">
+      <div class="motiv-track"><div class="motiv-fill" style="width:${compPct}%"></div></div>
+      <div class="motiv-pct">${compPct}%</div>
+    </div>
   </div></div>`;
 
   // 14-day programme

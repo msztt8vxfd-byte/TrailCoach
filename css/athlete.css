@@ -83,6 +83,18 @@ body { min-height:100%; padding-bottom:72px }
 .wstat-val { font-family:var(--font-m); font-size:15px; font-weight:700; color:var(--text) }
 .wstat-lbl { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-top:3px }
 
+/* ── Motivation card ── */
+.motiv { max-width:680px; margin:0 auto; padding:12px 16px 0 }
+.motiv-card { background:linear-gradient(135deg,var(--surface) 0%,var(--bg3) 100%); border:1px solid var(--border); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden }
+.motiv-card::before { content:''; position:absolute; top:-40px; right:-40px; width:140px; height:140px; border-radius:50%; background:var(--motiv-color,var(--accent-dim)); filter:blur(40px); pointer-events:none }
+.motiv-icon { font-size:24px; margin-bottom:8px; position:relative; z-index:1 }
+.motiv-title { font-family:var(--font-d); font-size:18px; font-weight:800; font-style:italic; margin-bottom:6px; position:relative; z-index:1 }
+.motiv-msg { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:14px; position:relative; z-index:1 }
+.motiv-progress { display:flex; align-items:center; gap:10px; position:relative; z-index:1 }
+.motiv-track { flex:1; height:8px; background:var(--bg3); border-radius:6px; overflow:hidden }
+.motiv-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--motiv-color,var(--accent)) 0%,var(--accent2) 100%); transition:width .8s cubic-bezier(.34,1.56,.64,1) }
+.motiv-pct { font-family:var(--font-m); font-size:14px; font-weight:700; color:var(--motiv-color,var(--accent)); min-width:42px; text-align:right }
+
 /* ── Section header ── */
 .sect-row { display:flex; align-items:center; justify-content:space-between; padding:22px 0 12px }
 .sect-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text2) }

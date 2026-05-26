@@ -1,0 +1,25 @@
+name = "trailcoach"
+pages_build_output_dir = "public"
+
+# ─────────────────────────────────────────────────────────────────
+# KV Namespace — à créer dans le dashboard Cloudflare puis remplacer
+# les IDs ci-dessous par les vrais IDs
+#
+# Étape 1 : dans le dashboard Cloudflare → Workers & Pages → KV
+#   → Create a namespace → "trailcoach-athletes"
+# Étape 2 : copier l'ID et le coller ici
+# ─────────────────────────────────────────────────────────────────
+[[kv_namespaces]]
+binding    = "ATHLETES_KV"
+id         = "REMPLACE_PAR_TON_KV_ID"
+preview_id = "REMPLACE_PAR_TON_KV_PREVIEW_ID"
+
+# ─────────────────────────────────────────────────────────────────
+# Variables d'environnement (preview / développement local)
+# Pour la production, utilise le dashboard Cloudflare →
+# Workers & Pages → trailcoach → Settings → Environment Variables
+# ─────────────────────────────────────────────────────────────────
+[vars]
+# STRAVA_CLIENT_ID     = "ton_client_id"
+# STRAVA_CLIENT_SECRET = "ton_client_secret"
+# COACH_TOKEN          = "ton_token_secret"

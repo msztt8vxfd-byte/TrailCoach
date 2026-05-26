@@ -1,0 +1,4 @@
+# Cloudflare Pages — SPA routing
+# Les routes /api/* sont gérées par les fonctions (functions/api/)
+# Toutes les autres routes renvoient vers index.html (Vue Router / hash routing)
+/*  /index.html  200

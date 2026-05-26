@@ -335,11 +335,24 @@ renders.dashboard = function() {
   const totalKm = weekActs.reduce((acc,a)=>acc+(a.distM/1000),0);
   const comp = weekSess.length ? Math.round(doneCount/weekSess.length*100) : 0;
 
+  // Previous week metrics for trend comparison
+  const prevMon=getMon(-1), prevSun=new Date(prevMon); prevSun.setDate(prevMon.getDate()+7);
+  const prevWeekSess = S.sessions.filter(s=>new Date(s.date)>=prevMon&&new Date(s.date)<prevSun);
+  const prevDoneCount = prevWeekSess.filter(s=>s.done).length;
+  const prevWeekActs = S.activities.filter(a=>new Date(a.date)>=prevMon&&new Date(a.date)<prevSun);
+  const prevTotalKm = prevWeekActs.reduce((acc,a)=>acc+(a.distM/1000),0);
+  const prevComp = prevWeekSess.length ? Math.round(prevDoneCount/prevWeekSess.length*100) : 0;
+
   document.getElementById('kpi-ath').textContent = S.athletes.length;
   document.getElementById('kpi-sess').textContent = weekSess.length;
   document.getElementById('kpi-sess-sub').textContent = `${doneCount} réalisées · ${weekSess.length-doneCount} à venir`;
   document.getElementById('kpi-km').textContent = totalKm ? Math.round(totalKm)+'km' : '—';
   document.getElementById('kpi-comp').textContent = weekSess.length ? comp+'%' : '—';
+
+  // Render trend indicators
+  document.getElementById('kpi-sess-trend').innerHTML = renderTrend(weekSess.length, prevWeekSess.length);
+  document.getElementById('kpi-km-trend').innerHTML = renderTrend(totalKm, prevTotalKm);
+  document.getElementById('kpi-comp-trend').innerHTML = renderTrend(comp, prevComp, 'pp');
 
   document.getElementById('athletes-grid').innerHTML = S.athletes.map(a => {
     const aSess=getAthleteSessions(a.id);

@@ -48,3 +48,14 @@ function showToast(msg, type = '', dur = 2800) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
+
+function renderTrend(current, previous, unit = '%') {
+  if (previous === 0 && current === 0) return '';
+  if (previous === 0) return `<span class="kpi-trend up"><span class="kpi-trend-arrow">↑</span>new</span>`;
+  const delta = current - previous;
+  if (Math.abs(delta) < 0.01) return `<span class="kpi-trend flat"><span class="kpi-trend-arrow">→</span>0${unit==='pp'?'pp':'%'}</span>`;
+  const pct = unit === 'pp' ? Math.round(delta) : Math.round((delta / previous) * 100);
+  const cls = delta > 0 ? 'up' : 'down';
+  const arrow = delta > 0 ? '↑' : '↓';
+  return `<span class="kpi-trend ${cls}"><span class="kpi-trend-arrow">${arrow}</span>${Math.abs(pct)}${unit==='pp'?'pp':'%'}</span>`;
+}

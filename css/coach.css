@@ -20,9 +20,11 @@ html, body { height:100%; overflow:hidden }
 .logo em { color:var(--accent); font-style:normal }
 .logo-badge { font-size:9px; font-weight:700; background:var(--accent); color:#000; padding:1px 5px; border-radius:3px; font-family:var(--font-m); letter-spacing:1px }
 .topbar-center { flex:1; display:flex; align-items:center; padding:0 16px; gap:4px }
-.top-tab { padding:5px 14px; border-radius:6px; font-size:12px; font-weight:600; letter-spacing:.3px; cursor:pointer; color:var(--text3); transition:all .15s; border:1px solid transparent }
+.top-tab { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; letter-spacing:.3px; cursor:pointer; color:var(--text3); transition:all .15s; border:1px solid transparent }
 .top-tab:hover { color:var(--text2); background:var(--surface) }
 .top-tab.active { color:var(--accent); background:var(--accent-dim); border-color:rgba(232,255,71,.2) }
+.tab-ic { font-size:14px; line-height:1; filter:saturate(1.1) }
+.nav-ic { font-size:15px; line-height:1; width:20px; display:inline-flex; justify-content:center; filter:saturate(1.1) }
 .topbar-right { display:flex; align-items:center; gap:8px; padding-right:16px; margin-left:auto }
 .race-chip { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); font-size:11px; font-family:var(--font-m); color:var(--text2) }
 .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; box-shadow:0 0 6px var(--green); animation:blink 2s ease-in-out infinite }

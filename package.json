@@ -10,7 +10,8 @@
     "zip": "zip -r trailcoach-netlify.zip trailcoach-netlify/"
   },
   "dependencies": {
-    "@netlify/blobs": "^8.0.0"
+    "@netlify/blobs": "^8.0.0",
+    "@vercel/kv": "^1.0.0"
   },
   "devDependencies": {}
 }

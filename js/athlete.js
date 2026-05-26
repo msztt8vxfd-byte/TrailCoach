@@ -317,6 +317,23 @@ function buildProgrammeHtml(data, today, mon) {
     </div>
   </div></div>`;
 
+  // Progress check: this week vs last week
+  const prevMon = new Date(mon); prevMon.setDate(mon.getDate() - 7);
+  const prevSun = new Date(prevMon); prevSun.setDate(prevMon.getDate() + 7);
+  const prevSess = sessions.filter(x => { const d = new Date(x.d); d.setHours(0,0,0,0); return d >= prevMon && d < prevSun; });
+  const prevDone = prevSess.filter(x => x.ok).length;
+  const prevComp = prevSess.length ? Math.round(prevDone/prevSess.length*100) : 0;
+  const compDelta = compPct - prevComp;
+  const checkIcon = compDelta > 10 ? '📈' : compDelta < -10 ? '📉' : '➡️';
+  const checkMsg = compDelta > 10 ? `Excellente progression ! +${compDelta}pp vs semaine dernière` :
+                   compDelta < -10 ? `À remonter un peu. ${compDelta}pp vs semaine dernière` :
+                   'Rythme maintenu cette semaine';
+  html += `<div class="motiv"><div class="motiv-card" style="--motiv-color:var(--text2);opacity:.8">
+    <div class="motiv-icon" style="font-size:28px">${checkIcon}</div>
+    <div class="motiv-title" style="font-size:14px">Vérification de progression</div>
+    <div class="motiv-msg" style="font-size:12px;margin-bottom:0">${checkMsg}</div>
+  </div></div>`;
+
   // 14-day programme
   html += `<div class="page"><div class="sect-row"><div class="sect-title">Programme — 2 semaines</div></div>`;
   for (let i=0; i<14; i++) {

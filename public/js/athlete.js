@@ -215,6 +215,16 @@ function renderMatchCard(act, sess) {
 
 // ── Build section HTML ────────────────────────────────────────
 
+function getMotivation(pct, total, done) {
+  if (total === 0) return {icon:'🌱', title:'Nouvelle semaine', msg:'Aucune séance planifiée pour le moment. Reste à l\'écoute de ton coach.', color:'var(--text2)'};
+  if (pct === 100) return {icon:'🏆', title:'Semaine parfaite !', msg:'Tu as terminé toutes tes séances. Bravo, continue sur cette lancée !', color:'var(--green)'};
+  if (pct >= 75) return {icon:'🔥', title:'Excellent rythme !', msg:`${done}/${total} séances réalisées. Tu es sur la bonne voie, garde le cap !`, color:'var(--accent)'};
+  if (pct >= 50) return {icon:'💪', title:'Belle progression', msg:`${done}/${total} séances réalisées. Continue, tu peux encore terminer fort cette semaine !`, color:'var(--blue)'};
+  if (pct >= 25) return {icon:'🎯', title:'Reste concentré', msg:`${done}/${total} séances réalisées. Encore quelques efforts pour atteindre tes objectifs.`, color:'var(--amber)'};
+  if (done > 0) return {icon:'🚀', title:'C\'est parti !', msg:`${done}/${total} séances réalisées. Chaque pas compte, continue sur ta lancée.`, color:'var(--orange)'};
+  return {icon:'⚡', title:'Prêt à commencer ?', msg:`${total} séances t'attendent cette semaine. Ton coach a préparé un programme pour toi.`, color:'var(--accent)'};
+}
+
 function buildProfilHtml(data, kmPlanned, done, weekSess, minPlanned, dpPlanned) {
   const {prenom, nom, color, niv, obj, disc, strava, stravaClientId} = data;
   return `<div class="hero">
@@ -294,6 +304,36 @@ function buildProgrammeHtml(data, today, mon) {
     <div class="wstat"><div class="wstat-val">${dpPlanned?dpPlanned+'m':'—'}</div><div class="wstat-lbl">D+</div></div>
   </div></div>`;
 
+  // Motivation card
+  const compPct = weekSess.length ? Math.round(done/weekSess.length*100) : 0;
+  const motiv = getMotivation(compPct, weekSess.length, done);
+  html += `<div class="motiv"><div class="motiv-card" style="--motiv-color:${motiv.color}">
+    <div class="motiv-icon">${motiv.icon}</div>
+    <div class="motiv-title">${motiv.title}</div>
+    <div class="motiv-msg">${motiv.msg}</div>
+    <div class="motiv-progress">
+      <div class="motiv-track"><div class="motiv-fill" style="width:${compPct}%"></div></div>
+      <div class="motiv-pct">${compPct}%</div>
+    </div>
+  </div></div>`;
+
+  // Progress check: this week vs last week
+  const prevMon = new Date(mon); prevMon.setDate(mon.getDate() - 7);
+  const prevSun = new Date(prevMon); prevSun.setDate(prevMon.getDate() + 7);
+  const prevSess = sessions.filter(x => { const d = new Date(x.d); d.setHours(0,0,0,0); return d >= prevMon && d < prevSun; });
+  const prevDone = prevSess.filter(x => x.ok).length;
+  const prevComp = prevSess.length ? Math.round(prevDone/prevSess.length*100) : 0;
+  const compDelta = compPct - prevComp;
+  const checkIcon = compDelta > 10 ? '📈' : compDelta < -10 ? '📉' : '➡️';
+  const checkMsg = compDelta > 10 ? `Excellente progression ! +${compDelta}pp vs semaine dernière` :
+                   compDelta < -10 ? `À remonter un peu. ${compDelta}pp vs semaine dernière` :
+                   'Rythme maintenu cette semaine';
+  html += `<div class="motiv"><div class="motiv-card" style="--motiv-color:var(--text2);opacity:.8">
+    <div class="motiv-icon" style="font-size:28px">${checkIcon}</div>
+    <div class="motiv-title" style="font-size:14px">Vérification de progression</div>
+    <div class="motiv-msg" style="font-size:12px;margin-bottom:0">${checkMsg}</div>
+  </div></div>`;
+
   // 14-day programme
   html += `<div class="page"><div class="sect-row"><div class="sect-title">Programme — 2 semaines</div></div>`;
   for (let i=0; i<14; i++) {
@@ -325,7 +365,10 @@ function buildProgrammeHtml(data, today, mon) {
             <div class="scard-top">
               <div class="scard-title-row">
                 <span class="scard-name">${ICONS[sess.t]||'🏃'} ${sess.ti||sess.n||'Séance'}</span>
-                <span class="type-pill ${PILLS[sess.t]||'tp-ef'}">${LABELS[sess.t]||sess.t||'EF'}</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="type-pill ${PILLS[sess.t]||'tp-ef'}">${LABELS[sess.t]||sess.t||'EF'}</span>
+                  ${renderIntensityBar(getIntensity(sess.t))}
+                </div>
               </div>
               <span class="status-pill ${sc}" onclick="toggleSessionDone(this,${JSON.stringify(sess.id)},${sess.ok})">${sl}</span>
             </div>

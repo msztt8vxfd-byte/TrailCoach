@@ -335,11 +335,24 @@ renders.dashboard = function() {
   const totalKm = weekActs.reduce((acc,a)=>acc+(a.distM/1000),0);
   const comp = weekSess.length ? Math.round(doneCount/weekSess.length*100) : 0;
 
+  // Previous week metrics for trend comparison
+  const prevMon=getMon(-1), prevSun=new Date(prevMon); prevSun.setDate(prevMon.getDate()+7);
+  const prevWeekSess = S.sessions.filter(s=>new Date(s.date)>=prevMon&&new Date(s.date)<prevSun);
+  const prevDoneCount = prevWeekSess.filter(s=>s.done).length;
+  const prevWeekActs = S.activities.filter(a=>new Date(a.date)>=prevMon&&new Date(a.date)<prevSun);
+  const prevTotalKm = prevWeekActs.reduce((acc,a)=>acc+(a.distM/1000),0);
+  const prevComp = prevWeekSess.length ? Math.round(prevDoneCount/prevWeekSess.length*100) : 0;
+
   document.getElementById('kpi-ath').textContent = S.athletes.length;
   document.getElementById('kpi-sess').textContent = weekSess.length;
   document.getElementById('kpi-sess-sub').textContent = `${doneCount} réalisées · ${weekSess.length-doneCount} à venir`;
   document.getElementById('kpi-km').textContent = totalKm ? Math.round(totalKm)+'km' : '—';
   document.getElementById('kpi-comp').textContent = weekSess.length ? comp+'%' : '—';
+
+  // Render trend indicators
+  document.getElementById('kpi-sess-trend').innerHTML = renderTrend(weekSess.length, prevWeekSess.length);
+  document.getElementById('kpi-km-trend').innerHTML = renderTrend(totalKm, prevTotalKm);
+  document.getElementById('kpi-comp-trend').innerHTML = renderTrend(comp, prevComp, 'pp');
 
   document.getElementById('athletes-grid').innerHTML = S.athletes.map(a => {
     const aSess=getAthleteSessions(a.id);
@@ -347,6 +360,14 @@ renders.dashboard = function() {
     const km=aActs.reduce((acc,x)=>acc+(x.distM/1000),0);
     const done=aSess.filter(s=>s.done).length;
     const c=aSess.length?Math.round(done/aSess.length*100):0;
+
+    // Previous week comparison
+    const prevMon=getMon(-1), prevSun=new Date(prevMon); prevSun.setDate(prevMon.getDate()+7);
+    const prevSess=S.sessions.filter(s=>s.athId===a.id&&new Date(s.date)>=prevMon&&new Date(s.date)<prevSun);
+    const prevDone=prevSess.filter(s=>s.done).length;
+    const prevC=prevSess.length?Math.round(prevDone/prevSess.length*100):0;
+    const delta=c-prevC, trendArrow=delta>2?'↑':delta<-2?'↓':'→', trendColor=delta>2?'var(--green)':delta<-2?'var(--red)':'var(--text3)';
+
     const avgA=aActs.length?aActs.reduce((acc,x)=>acc+(x.allur||0),0)/aActs.length:null;
     const target=aSess.reduce((acc,s)=>acc+(s.dist||0),0);
     const pct=target?Math.min(Math.round(km/target*100),100):0;
@@ -360,7 +381,7 @@ renders.dashboard = function() {
       <div class="ath-metrics">
         <div class="ath-metric"><div class="ath-metric-val">${km.toFixed(1)}km</div><div class="ath-metric-lbl">Cette sem.</div></div>
         <div class="ath-metric"><div class="ath-metric-val">${fmtAllur(avgA)}</div><div class="ath-metric-lbl">Allure</div></div>
-        <div class="ath-metric"><div class="ath-metric-val">${c}%</div><div class="ath-metric-lbl">Complétion</div></div>
+        <div class="ath-metric"><div class="ath-metric-row"><span class="ath-metric-val">${c}%</span><span style="font-size:11px;font-weight:700;color:${trendColor}">${trendArrow}</span></div><div class="ath-metric-lbl">Complétion</div></div>
       </div>
       <div class="ath-prog">
         <div class="prog-row"><span>Volume hebdo</span><span>${km.toFixed(1)} / ${target}km</span></div>
@@ -368,6 +389,28 @@ renders.dashboard = function() {
       </div>
     </div>`;
   }).join('');
+
+  // Weekly stars (100% completion)
+  const stars = S.athletes.filter(a => {
+    const aSess = getAthleteSessions(a.id);
+    if (aSess.length === 0) return false;
+    const done = aSess.filter(s => s.done).length;
+    return done === aSess.length;
+  }).slice(0,6);
+
+  document.getElementById('weekly-stars').innerHTML = stars.length
+    ? stars.map(a => {
+        const aSess = getAthleteSessions(a.id);
+        const aActs = S.activities.filter(x => x.athId === a.id && new Date(x.date) >= mon && new Date(x.date) < sun);
+        const km = aActs.reduce((acc, x) => acc + (x.distM/1000), 0);
+        return `<div class="star-card" style="--star-color:${a.color}">
+          <div class="star-avatar" style="background:${a.color};color:white">${initials(a)}</div>
+          <div class="star-name">${a.prenom}</div>
+          <div style="font-size:10px;color:var(--text3)">${aSess.length} séances · ${km.toFixed(0)}km</div>
+          <div class="star-badge">100% ✓</div>
+        </div>`;
+      }).join('')
+    : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Aucun athlète avec 100% de complétion cette semaine · Encouragez-les ! 💪</div>';
 
   const upcoming = S.sessions.filter(s=>!s.done&&new Date(s.date)>=now).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,5);
   document.getElementById('upcoming-sessions').innerHTML = upcoming.length

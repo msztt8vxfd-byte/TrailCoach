@@ -101,6 +101,11 @@ body { min-height:100%; padding-bottom:72px }
 .sect-action { font-size:11px; color:var(--text3); cursor:pointer; transition:color .2s }
 .sect-action:hover { color:var(--text2) }
 
+/* ── Intensity bars ── */
+.intensity { display:flex; gap:2px; align-items:flex-end; height:16px }
+.intensity-bar { width:3px; background:var(--bar-color,var(--text3)); opacity:.3; border-radius:2px }
+.intensity-bar.fill { opacity:1 }
+
 /* ── Session cards ── */
 .scard { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; transition:all .2s; box-shadow:var(--shadow-sm) }
 .scard.today { border-color:rgba(232,255,71,.4); box-shadow:0 0 16px var(--accent-dim) }

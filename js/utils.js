@@ -49,6 +49,17 @@ function showToast(msg, type = '', dur = 2800) {
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
+function getIntensity(sessType) {
+  const map = { EF: 1, RECUP: 1, TEMPO: 2, FRAC: 4, TRAIL: 3 };
+  return map[sessType] || 2;
+}
+
+function renderIntensityBar(level) {
+  const bars = Array(4).fill(0).map((_, i) => i < level ? 'fill' : '').map(cls =>
+    `<div class="intensity-bar ${cls}"></div>`).join('');
+  return `<div class="intensity">${bars}</div>`;
+}
+
 function renderTrend(current, previous, unit = '%') {
   if (previous === 0 && current === 0) return '';
   if (previous === 0) return `<span class="kpi-trend up"><span class="kpi-trend-arrow">↑</span>new</span>`;

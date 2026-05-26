@@ -348,7 +348,10 @@ function buildProgrammeHtml(data, today, mon) {
             <div class="scard-top">
               <div class="scard-title-row">
                 <span class="scard-name">${ICONS[sess.t]||'🏃'} ${sess.ti||sess.n||'Séance'}</span>
-                <span class="type-pill ${PILLS[sess.t]||'tp-ef'}">${LABELS[sess.t]||sess.t||'EF'}</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="type-pill ${PILLS[sess.t]||'tp-ef'}">${LABELS[sess.t]||sess.t||'EF'}</span>
+                  ${renderIntensityBar(getIntensity(sess.t))}
+                </div>
               </div>
               <span class="status-pill ${sc}" onclick="toggleSessionDone(this,${JSON.stringify(sess.id)},${sess.ok})">${sl}</span>
             </div>
